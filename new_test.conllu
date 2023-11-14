@@ -1,4 +1,4 @@
-# global.columns = ID FORM LEMMA UPOS XPOS FEATS HEAD DEPREL DEPS MISC
+﻿# global.columns = ID FORM LEMMA UPOS XPOS FEATS HEAD DEPREL DEPS MISC
 # newdoc_id = k68
 # sent_id = FOLHA_DOC000005_SENT021
 # text = Essa plataforma começa a operar ainda este mês um marketplace, inclusive com produtos como os da Apple Store.
@@ -36,7 +36,7 @@
 6	os	o	DET	_	Definite=Def|Gender=Masc|Number=Plur|PronType=Art	7	det	_	_
 7	fãs	fã	NOUN	_	Number=Plur	4	obl:agent	_	_
 8	e	e	CCONJ	_	_	10	cc	_	_
-9	se	se	PRON	_	Case=Acc|Person=3|PronType=Prs	10	obj	_	_
+9	se	se	PRON	_	Case=Acc|Person=3|PronType=Prs	10	expl	_	_
 10	tornou	tornar	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	4	conj	_	_
 11	um	um	NUM	_	Gender=Masc|NumType=Card	10	xcomp	_	_
 12-13	dos	_	_	_	_	_	_	_	_
@@ -175,6 +175,7 @@
 13	preventivamente	preventivamente	ADV	_	_	12	advmod	_	SpaceAfter=No
 14	.	.	PUNCT	_	_	2	punct	_	SpaceAfter=No
 
+
 # sent_id = FOLHA_DOC000037_SENT016
 # text = Isso nos deixa mais animados, diz Philipp Schiemer, presidente da companhia no Brasil e na América Latina.
 1	Isso	isso	PRON	_	Gender=Masc|Number=Sing|PronType=Dem	3	nsubj	_	_
@@ -204,6 +205,7 @@
 22	Latina	Latina	PROPN	_	_	21	flat:name	_	SpaceAfter=No
 23	.	.	PUNCT	_	_	7	punct	_	SpaceAfter=No
 
+
 # sent_id = FOLHA_DOC000008_SENT010
 # text = Uma vitória da seleção brasileira pode ajudar a Argentina a se classificar sem a repescagem ao Mundial.
 1	Uma	um	DET	_	Definite=Ind|Gender=Fem|Number=Sing|PronType=Art	2	det	_	_
@@ -228,6 +230,7 @@
 18	o	o	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	19	det	_	_
 19	Mundial	Mundial	PROPN	_	_	13	obl	_	SpaceAfter=No
 20	.	.	PUNCT	_	_	7	punct	_	SpaceAfter=No
+
 
 # sent_id = FOLHA_DOC000002_SENT006
 # text = Ela conta que o desejo de fazer a mãe feliz a incentivou, inclusive, a abandonar os estudos para se dedicar à música.
@@ -259,15 +262,17 @@
 25	música	música	NOUN	_	Gender=Fem|Number=Sing	22	obl	_	SpaceAfter=No
 26	.	.	PUNCT	_	_	2	punct	_	SpaceAfter=No
 
+
 # sent_id = FOLHA_DOC000012_SENT015
 # text = Podíamos ver o céu ficando vermelho.
 1	Podíamos	poder	VERB	_	Mood=Ind|Number=Plur|Person=1|Tense=Imp|VerbForm=Fin	0	root	_	_
 2	ver	ver	VERB	_	VerbForm=Inf	1	xcomp	_	_
 3	o	o	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	4	det	_	_
 4	céu	céu	NOUN	_	Gender=Masc|Number=Sing	2	obj	_	_
-5	ficando	ficar	VERB	_	VerbForm=Ger	2	xcomp	_	_
+5	ficando	ficar	VERB	_	VerbForm=Ger	4	acl	_	_
 6	vermelho	vermelho	ADJ	_	Gender=Masc|Number=Sing	5	xcomp	_	SpaceAfter=No
 7	.	.	PUNCT	_	_	1	punct	_	SpaceAfter=No
+
 
 # sent_id = FOLHA_DOC000003_SENT014
 # text = Dois dias após a publicação do material pelo jornal, o governo paulista revogou os decretos de sigilo e se comprometeu a revisar todos os termos semelhantes impostos até então.
@@ -306,6 +311,7 @@
 31	até	até	ADP	_	_	32	case	_	_
 32	então	então	ADV	_	_	30	advmod	_	SpaceAfter=No
 33	.	.	PUNCT	_	_	16	punct	_	SpaceAfter=No
+
 
 # sent_id = FOLHA_DOC000007_SENT007
 # text = Battisti foi detido na semana passada acusado de evasão de divisas ao tentar atravessar a fronteira com a Bolívia portando dólares e euros no valor equivalente a pouco mais de R$ 23 mil.
@@ -350,6 +356,7 @@
 36	mil	mil	NUM	_	NumType=Card	35	flat	_	SpaceAfter=No
 37	.	.	PUNCT	_	_	3	punct	_	SpaceAfter=No
 
+
 # sent_id = FOLHA_DOC000007_SENT022
 # text = Agora a Subchefia para Assuntos Jurídicos (SAJ) do Planalto está elaborando uma avaliação que deve ficar pronta na quarta-feira (11).
 1	Agora	agora	ADV	_	_	14	advmod	_	_
@@ -382,6 +389,7 @@
 26	)	)	PUNCT	_	_	25	punct	_	SpaceAfter=No
 27	.	.	PUNCT	_	_	14	punct	_	SpaceAfter=No
 
+
 # sent_id = FOLHA_DOC000008_SENT001
 # text = Tite diz querer seguir na seleção após o Mundial da Rússia.
 1	Tite	Tite	PROPN	_	_	2	nsubj	_	_
@@ -400,6 +408,7 @@
 12	a	o	DET	_	Definite=Def|Gender=Fem|Number=Sing|PronType=Art	13	det	_	_
 13	Rússia	Rússia	PROPN	_	_	10	nmod	_	SpaceAfter=No
 14	.	.	PUNCT	_	_	2	punct	_	SpaceAfter=No
+
 
 # sent_id = FOLHA_DOC000013_SENT006
 # text = Acho que esse dinheiro foi usado efetivamente no negócio, mas à medida que os recursos eram investidos iam caindo como um caminhão deixando grãos de soja caindo pelo caminho.
@@ -441,6 +450,29 @@
 33	caminho	caminho	NOUN	_	Gender=Masc|Number=Sing	30	obl	_	SpaceAfter=No
 34	.	.	PUNCT	_	_	1	punct	_	SpaceAfter=No
 
+
+# sent_id = FOLHA_DOC000032_SENT008
+# text = O banheiro é imundo, e isso porque deixam fechado, senão usuários de drogas tomam conta.
+1	O	o	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	2	det	_	_
+2	banheiro	banheiro	NOUN	_	Gender=Masc|Number=Sing	4	nsubj	_	_
+3	é	ser	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	4	cop	_	_
+4	imundo	imundo	ADJ	_	Gender=Masc|Number=Sing	0	root	_	SpaceAfter=No
+5	,	,	PUNCT	_	_	7	punct	_	_
+6	e	e	CCONJ	_	_	7	cc	_	_
+7	isso	isso	PRON	_	Gender=Masc|Number=Sing|PronType=Dem	4	conj	_	_
+8	porque	porque	SCONJ	_	_	9	mark	_	_
+9	deixam	deixar	VERB	_	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	7	advcl	_	_
+10	fechado	fechado	ADJ	_	Gender=Masc|Number=Sing|VerbForm=Part	9	xcomp	_	SpaceAfter=No
+11	,	,	PUNCT	_	_	16	punct	_	_
+12	senão	senão	CCONJ	_	_	16	cc	_	_
+13	usuários	usuário	NOUN	_	Gender=Masc|Number=Plur	16	nsubj	_	_
+14	de	de	ADP	_	_	15	case	_	_
+15	drogas	droga	NOUN	_	Gender=Fem|Number=Plur	13	nmod	_	_
+16	tomam	tomar	VERB	_	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	9	conj	_	_
+17	conta	conta	NOUN	_	Gender=Fem|Number=Sing	16	obj	_	SpaceAfter=No
+18	.	.	PUNCT	_	_	4	punct	_	SpaceAfter=No
+
+
 # sent_id = FOLHA_DOC000062_SENT010
 # text = São universos que não se misturam.
 1	São	ser	AUX	_	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	2	cop	_	_
@@ -450,6 +482,7 @@
 5	se	se	PRON	_	Case=Nom|Person=3|PronType=Prs	6	expl	_	_
 6	misturam	misturar	VERB	_	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	2	acl:relcl	_	SpaceAfter=No
 7	.	.	PUNCT	_	_	2	punct	_	SpaceAfter=No
+
 
 # sent_id = FOLHA_DOC000064_SENT014
 # text = Permite a criação de uma holding controladora da empresa, que pode criar subsidiárias.
@@ -471,6 +504,7 @@
 15	subsidiárias	subsidiário	NOUN	_	Gender=Fem|Number=Plur	14	obj	_	SpaceAfter=No
 16	.	.	PUNCT	_	_	1	punct	_	SpaceAfter=No
 
+
 # sent_id = FOLHA_DOC000062_SENT013
 # text = Me surpreende a força de uma fé que é bastante simples, afirmou.
 1	Me	me	PRON	_	Case=Acc|Number=Sing|Person=1|PronType=Prs	2	obj	_	_
@@ -487,6 +521,7 @@
 12	,	,	PUNCT	_	_	2	punct	_	_
 13	afirmou	afirmar	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	SpaceAfter=No
 14	.	.	PUNCT	_	_	13	punct	_	SpaceAfter=No
+
 
 # sent_id = FOLHA_DOC000062_SENT019
 # text = Naza é o modo como muitos moradores de Belém se referem à Nossa Senhora de Nazaré.
@@ -509,6 +544,7 @@
 16	de	de	ADP	_	_	17	case	_	Proper=Yes
 17	Nazaré	Nazaré	PROPN	_	_	14	flat:name	_	SpaceAfter=No
 18	.	.	PUNCT	_	_	4	punct	_	SpaceAfter=No
+
 
 # sent_id = FOLHA_DOC000064_SENT024
 # text = A discussão poderá gerar questionamentos nos setores de água e esgoto, em que a Sabesp firma contratos sem concorrência, afirma Renato Poltronieri, do Demarest.
@@ -545,6 +581,7 @@
 29	Demarest	Demarest	PROPN	_	_	24	nmod	_	SpaceAfter=No
 30	.	.	PUNCT	_	_	23	punct	_	SpaceAfter=No
 
+
 # sent_id = FOLHA_DOC000068_SENT033
 # text = "O momento em que ele conseguiu enganar muita gente já passou".
 1	"	"	PUNCT	_	_	12	punct	_	SpaceAfter=No
@@ -561,6 +598,7 @@
 12	passou	passar	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	SpaceAfter=No
 13	"	"	PUNCT	_	_	12	punct	_	SpaceAfter=No
 14	.	.	PUNCT	_	_	12	punct	_	SpaceAfter=No
+
 
 # sent_id = FOLHA_DOC000069_SENT004
 # text = O órgão também pagará restituições de anos anteriores que ficaram retidas na malha fina.
@@ -582,149 +620,6 @@
 15	fina	fino	ADJ	_	Gender=Fem|Number=Sing	14	amod	_	SpaceAfter=No
 16	.	.	PUNCT	_	_	4	punct	_	SpaceAfter=No
 
-# sent_id = FOLHA_DOC003008_SENT010
-# text = O primeiro foi preso em flagrante por porte de arma e o segundo, em cumprimento de um mandado de prisão.
-1	O	o	PRON	_	Gender=Masc|Number=Sing|Person=3|PronType=Dem	4	nsubj:pass	_	_
-2	primeiro	primeiro	ADJ	_	Gender=Masc|Number=Sing|NumType=Ord	1	amod	_	_
-3	foi	ser	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	4	aux:pass	_	_
-4	preso	prender	VERB	_	Gender=Masc|Number=Sing|VerbForm=Part|Voice=Pass	0	root	_	_
-5	em	em	ADP	_	_	6	case	_	_
-6	flagrante	flagrante	NOUN	_	Number=Sing	4	obl	_	_
-7	por	por	ADP	_	_	8	case	_	_
-8	porte	porte	NOUN	_	Gender=Masc|Number=Sing	4	obl	_	_
-9	de	de	ADP	_	_	10	case	_	_
-10	arma	arma	NOUN	_	Gender=Fem|Number=Sing	8	nmod	_	_
-11	e	e	CCONJ	_	_	12	cc	_	_
-12	o	o	PRON	_	Gender=Masc|Number=Sing|Person=3|PronType=Dem	4	conj	_	_
-13	segundo	segundo	ADJ	_	Gender=Masc|Number=Sing|NumType=Ord	12	amod	_	SpaceAfter=No
-14	,	,	PUNCT	_	_	16	punct	_	_
-15	em	em	ADP	_	_	16	case	_	_
-16	cumprimento	cumprimento	NOUN	_	Gender=Masc|Number=Sing	12	orphan	_	_
-17	de	de	ADP	_	_	19	case	_	_
-18	um	um	DET	_	Definite=Ind|Gender=Masc|Number=Sing|PronType=Art	19	det	_	_
-19	mandado	mandado	NOUN	_	Gender=Masc|Number=Sing	16	nmod	_	_
-20	de	de	ADP	_	_	21	case	_	_
-21	prisão	prisão	NOUN	_	Gender=Fem|Number=Sing	19	nmod	_	SpaceAfter=No
-22	.	.	PUNCT	_	_	4	punct	_	SpaceAfter=No
-
-# sent_id = FOLHA_DOC003048_SENT017
-# text = Só que é exatamente por isso que o Brasil desanima e está mais longe da Dinamarca que o Corinthians de seus perseguidores.
-1	Só	só	ADV	_	_	10	cc	_	_
-2	que	que	CCONJ	_	_	1	fixed	_	_
-3	é	ser	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	10	discourse	_	_
-4	exatamente	exatamente	ADV	_	_	6	advmod	_	_
-5	por	por	ADP	_	_	6	case	_	_
-6	isso	isso	PRON	_	Gender=Masc|Number=Sing|PronType=Dem	10	obl	_	_
-7	que	que	SCONJ	_	_	10	discourse	_	_
-8	o	o	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	9	det	_	_
-9	Brasil	Brasil	PROPN	_	_	10	nsubj	_	_
-10	desanima	desanimar	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	_
-11	e	e	CCONJ	_	_	14	cc	_	_
-12	está	estar	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	14	cop	_	_
-13	mais	mais	ADV	_	_	14	advmod	_	_
-14	longe	longe	ADV	_	_	10	conj	_	_
-15-16	da	_	_	_	_	_	_	_	_
-15	de	de	ADP	_	_	17	case	_	_
-16	a	o	DET	_	Definite=Def|Gender=Fem|Number=Sing|PronType=Art	17	det	_	_
-17	Dinamarca	Dinamarca	PROPN	_	_	14	obl	_	_
-18	que	que	SCONJ	_	_	20	mark	_	_
-19	o	o	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	20	det	_	_
-20	Corinthians	Corinthians	PROPN	_	_	14	advcl	_	_
-21	de	de	ADP	_	_	23	case	_	_
-22	seus	seu	DET	_	Gender=Masc|Number=Plur|Person=3|Poss=Yes|PronType=Prs	23	det	_	_
-23	perseguidores	perseguidor	NOUN	_	Gender=Masc|Number=Plur	20	orphan	_	SpaceAfter=No
-24	.	.	PUNCT	_	_	10	punct	_	SpaceAfter=No
-
-# sent_id = FOLHA_DOC003102_SENT012
-# text = Um copo de mate, tradicional nas praias do Rio, custa R$ 7, e um chope, R$ 12.
-1	Um	um	DET	_	Definite=Ind|Gender=Masc|Number=Sing|PronType=Art	2	det	_	_
-2	copo	copo	NOUN	_	Gender=Masc|Number=Sing	14	nsubj	_	_
-3	de	de	ADP	_	_	4	case	_	_
-4	mate	mate	NOUN	_	Gender=Masc|Number=Sing	2	nmod	_	SpaceAfter=No
-5	,	,	PUNCT	_	_	6	punct	_	_
-6	tradicional	tradicional	ADJ	_	Number=Sing	2	amod	_	_
-7-8	nas	_	_	_	_	_	_	_	_
-7	em	em	ADP	_	_	9	case	_	_
-8	as	o	DET	_	Definite=Def|Gender=Fem|Number=Plur|PronType=Art	9	det	_	_
-9	praias	praia	NOUN	_	Gender=Fem|Number=Plur	6	obl	_	_
-10-11	do	_	_	_	_	_	_	_	_
-10	de	de	ADP	_	_	12	case	_	_
-11	o	o	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	12	det	_	_
-12	Rio	Rio	PROPN	_	_	9	nmod	_	SpaceAfter=No
-13	,	,	PUNCT	_	_	6	punct	_	_
-14	custa	custar	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	_
-15	R$	R$	SYM	_	_	14	obj	_	_
-16	7	7	NUM	_	NumType=Card	15	nummod	_	SpaceAfter=No
-17	,	,	PUNCT	_	_	20	punct	_	_
-18	e	e	CCONJ	_	_	20	cc	_	_
-19	um	um	DET	_	Definite=Ind|Gender=Masc|Number=Sing|PronType=Art	20	det	_	_
-20	chope	chope	NOUN	_	Gender=Masc|Number=Sing	14	conj	_	SpaceAfter=No
-21	,	,	PUNCT	_	_	22	punct	_	_
-22	R$	R$	SYM	_	_	20	orphan	_	_
-23	12	12	NUM	_	NumType=Card	22	nummod	_	SpaceAfter=No
-24	.	.	PUNCT	_	_	14	punct	_	SpaceAfter=No
-
-# sent_id = FOLHA_DOC003102_SENT018
-# text = O chinelo de borracha saía a R$ 95, e o body, peça em alta entre o público, R$ 145.
-1	O	o	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	2	det	_	_
-2	chinelo	chinelo	NOUN	_	Gender=Masc|Number=Sing	5	nsubj	_	_
-3	de	de	ADP	_	_	4	case	_	_
-4	borracha	borracha	NOUN	_	Gender=Fem|Number=Sing	2	nmod	_	_
-5	saía	sair	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Imp|VerbForm=Fin	0	root	_	_
-6	a	a	ADP	_	_	7	case	_	_
-7	R$	R$	SYM	_	_	5	obl	_	_
-8	95	95	NUM	_	NumType=Card	7	nummod	_	SpaceAfter=No
-9	,	,	PUNCT	_	_	12	punct	_	_
-10	e	e	CCONJ	_	_	12	cc	_	_
-11	o	o	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	12	det	_	_
-12	body	body	X	_	Foreign=Yes	5	conj	_	SpaceAfter=No
-13	,	,	PUNCT	_	_	14	punct	_	_
-14	peça	peça	NOUN	_	Gender=Fem|Number=Sing	12	appos	_	_
-15	em	em	ADP	_	_	16	case	_	_
-16	alta	alta	NOUN	_	Gender=Fem|Number=Sing	14	nmod	_	_
-17	entre	entre	ADP	_	_	19	case	_	_
-18	o	o	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	19	det	_	_
-19	público	público	NOUN	_	Gender=Masc|Number=Sing	16	nmod	_	SpaceAfter=No
-20	,	,	PUNCT	_	_	21	punct	_	_
-21	R$	R$	SYM	_	_	12	orphan	_	_
-22	145	145	NUM	_	NumType=Card	21	nummod	_	SpaceAfter=No
-23	.	.	PUNCT	_	_	5	punct	_	SpaceAfter=No
-
-# sent_id = FOLHA_DOC003128_SENT019
-# text = Nele se aponta que os 10% mais ricos da população ficaram com descomunais 54,3% da renda gerada em 2001 e 55,3% em 2015.
-1-2	Nele	_	_	_	_	_	_	_	_
-1	Em	em	ADP	_	_	2	case	_	_
-2	ele	ele	PRON	_	Case=Nom|Gender=Masc|Number=Sing|Person=3|PronType=Prs	4	obl	_	_
-3	se	se	PRON	_	Case=Nom|Person=3|PronType=Prs	4	expl	_	_
-4	aponta	apontar	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	_
-5	que	que	SCONJ	_	_	14	mark	_	_
-6	os	o	DET	_	Definite=Def|Gender=Masc|Number=Plur|PronType=Art	8	det	_	_
-7	10	10	NUM	_	NumType=Card	8	nummod	_	SpaceAfter=No
-8	%	%	SYM	_	_	14	nsubj	_	_
-9	mais	mais	ADV	_	_	10	advmod	_	_
-10	ricos	rico	ADJ	_	Gender=Masc|Number=Plur	8	amod	_	_
-11-12	da	_	_	_	_	_	_	_	_
-11	de	de	ADP	_	_	13	case	_	_
-12	a	o	DET	_	Definite=Def|Gender=Fem|Number=Sing|PronType=Art	13	det	_	_
-13	população	população	NOUN	_	Gender=Fem|Number=Sing	8	nmod	_	_
-14	ficaram	ficar	VERB	_	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	4	ccomp	_	_
-15	com	com	ADP	_	_	18	case	_	_
-16	descomunais	descomunal	ADJ	_	Number=Plur	18	amod	_	_
-17	54,3	54,3	NUM	_	NumType=Card	18	nummod	_	SpaceAfter=No
-18	%	%	SYM	_	_	14	obl	_	_
-19-20	da	_	_	_	_	_	_	_	_
-19	de	de	ADP	_	_	21	case	_	_
-20	a	o	DET	_	Definite=Def|Gender=Fem|Number=Sing|PronType=Art	21	det	_	_
-21	renda	renda	NOUN	_	Gender=Fem|Number=Sing	18	nmod	_	_
-22	gerada	gerar	VERB	_	Gender=Fem|Number=Sing|VerbForm=Part|Voice=Pass	21	acl	_	_
-23	em	em	ADP	_	_	24	case	_	_
-24	2001	2001	NUM	_	NumType=Card	22	obl	_	_
-25	e	e	CCONJ	_	_	27	cc	_	_
-26	55,3	55,3	NUM	_	NumType=Card	27	nummod	_	SpaceAfter=No
-27	%	%	SYM	_	_	18	conj	_	_
-28	em	em	ADP	_	_	29	case	_	_
-29	2015	2015	NUM	_	NumType=Card	27	orphan	_	SpaceAfter=No
-30	.	.	PUNCT	_	_	4	punct	_	SpaceAfter=No
 
 # sent_id = FOLHA_DOC000009_SENT005
 # text = Segundo eles, o ato deveria ser anulado e reavaliado.
@@ -739,6 +634,7 @@
 9	e	e	CCONJ	_	_	10	cc	_	_
 10	reavaliado	reavaliar	VERB	_	Gender=Masc|Number=Sing|VerbForm=Part	8	conj	_	SpaceAfter=No
 11	.	.	PUNCT	_	_	6	punct	_	SpaceAfter=No
+
 
 # sent_id = FOLHA_DOC000002_SENT016
 # text = No repertório que trouxe para cá, ela mistura o ritmo com batidas eletrônicas e conta que a atualização tinha como intuito atingir novas gerações e público do mercado global.
@@ -778,6 +674,7 @@
 32	global	global	ADJ	_	Number=Sing	31	amod	_	SpaceAfter=No
 33	.	.	PUNCT	_	_	10	punct	_	SpaceAfter=No
 
+
 # sent_id = FOLHA_DOC000004_SENT003
 # text = O trailer era aguardado pelos fãs e se tornou um dos tópicos mais comentados no Twitter no horário de seu lançamento.
 1	O	o	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	2	det	_	_
@@ -811,6 +708,7 @@
 25	lançamento	lançamento	NOUN	_	Gender=Masc|Number=Sing	22	nmod	_	SpaceAfter=No
 26	.	.	PUNCT	_	_	4	punct	_	SpaceAfter=No
 
+
 # sent_id = FOLHA_DOC000005_SENT001
 # text = CBSS inicia acordos com fintechs e quer 30% do crédito digital em 2018.
 1	CBSS	CBSS	PROPN	_	_	2	nsubj	_	_
@@ -831,6 +729,7 @@
 15	2018	2018	NUM	_	NumType=Card	7	obl	_	SpaceAfter=No
 16	.	.	PUNCT	_	_	2	punct	_	SpaceAfter=No
 
+
 # sent_id = FOLHA_DOC000007_SENT019
 # text = Battisti fugiu da Itália e, em 2004, veio para o Brasil.
 1	Battisti	Battisti	PROPN	_	_	2	nsubj	_	_
@@ -850,6 +749,7 @@
 14	Brasil	Brasil	PROPN	_	_	11	obl	_	SpaceAfter=No
 15	.	.	PUNCT	_	_	2	punct	_	SpaceAfter=No
 
+
 # sent_id = FOLHA_DOC000041_SENT083
 # text = Uma mulher que está grávida e tem uma adicção é vista como um monstro.
 1	Uma	um	DET	_	Definite=Ind|Gender=Fem|Number=Sing|PronType=Art	2	det	_	_
@@ -867,6 +767,7 @@
 13	um	um	DET	_	Definite=Ind|Gender=Masc|Number=Sing|PronType=Art	14	det	_	_
 14	monstro	monstro	NOUN	_	Gender=Masc|Number=Sing	11	obl	_	SpaceAfter=No
 15	.	.	PUNCT	_	_	11	punct	_	SpaceAfter=No
+
 
 # sent_id = FOLHA_DOC000008_SENT014
 # text = Entre os dois times estão Colômbia, quarta colocada (26 pontos), e o Peru, quinto colocado (25 pontos).
@@ -895,6 +796,7 @@
 23	pontos	ponto	NOUN	_	Gender=Masc|Number=Plur	20	parataxis	_	SpaceAfter=No
 24	)	)	PUNCT	_	_	23	punct	_	SpaceAfter=No
 25	.	.	PUNCT	_	_	4	punct	_	SpaceAfter=No
+
 
 # sent_id = FOLHA_DOC000015_SENT019
 # text = A empresa é hoje líder em exportações, mas está na terceira posição em vendas no mercado nacional, com 12% de participação.
@@ -927,6 +829,7 @@
 25	de	de	ADP	_	_	26	case	_	_
 26	participação	participação	NOUN	_	Gender=Fem|Number=Sing	24	nmod	_	SpaceAfter=No
 27	.	.	PUNCT	_	_	5	punct	_	SpaceAfter=No
+
 
 # sent_id = FOLHA_DOC000016_SENT003
 # text = Rogério é um dos chefes do tráfico da favela da Rocinha, em São Conrado, na zona sul do Rio e continua foragido.
@@ -968,6 +871,7 @@
 30	foragido	foragido	ADJ	_	Gender=Masc|Number=Sing|VerbForm=Part	29	xcomp	_	SpaceAfter=No
 31	.	.	PUNCT	_	_	3	punct	_	SpaceAfter=No
 
+
 # sent_id = FOLHA_DOC000018_SENT027
 # text = Loyola Guzmán era líder da juventude comunista em La Paz, a capital boliviana, e seria uma das primeiras pessoas a saber onde Che estava.
 1	Loyola	Loyola	PROPN	_	_	4	nsubj	_	_
@@ -1002,6 +906,7 @@
 28	estava	estar	AUX	_	Mood=Ind|Number=Sing|Person=1|Tense=Imp|VerbForm=Fin	26	cop	_	SpaceAfter=No
 29	.	.	PUNCT	_	_	4	punct	_	SpaceAfter=No
 
+
 # sent_id = FOLHA_DOC000024_SENT034
 # text = Eu era o 17º passageiro em pé e fui espremido na porta, contou o analista.
 1	Eu	eu	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	5	nsubj	_	_
@@ -1024,6 +929,7 @@
 17	analista	analista	NOUN	_	Number=Sing	15	nsubj	_	SpaceAfter=No
 18	.	.	PUNCT	_	_	15	punct	_	SpaceAfter=No
 
+
 # sent_id = FOLHA_DOC000002_SENT002
 # text = Para Oumou Sangaré, cantora e ativista malinesa, o sofrimento da mulher é universal.
 1	Para	para	ADP	_	_	2	case	_	_
@@ -1045,6 +951,7 @@
 16	universal	universal	ADJ	_	Number=Sing	0	root	_	SpaceAfter=No
 17	.	.	PUNCT	_	_	16	punct	_	SpaceAfter=No
 
+
 # sent_id = FOLHA_DOC000003_SENT006
 # text = Ele teve neste ano 11 categorias nacionais e regionais, além de dois prêmios especiais.
 1	Ele	ele	PRON	_	Case=Nom|Gender=Masc|Number=Sing|Person=3|PronType=Prs	2	nsubj	_	_
@@ -1065,6 +972,7 @@
 15	prêmios	prêmio	NOUN	_	Gender=Masc|Number=Plur	12	obl	_	_
 16	especiais	especial	ADJ	_	Number=Plur	15	amod	_	SpaceAfter=No
 17	.	.	PUNCT	_	_	2	punct	_	SpaceAfter=No
+
 
 # sent_id = FOLHA_DOC000025_SENT004
 # text = A linguagem não tem nada a ver, mas ele é um sujeito machista, durão, que não sabe lidar com emoções.
@@ -1093,6 +1001,7 @@
 23	emoções	emoção	NOUN	_	Gender=Fem|Number=Plur	21	obl	_	SpaceAfter=No
 24	.	.	PUNCT	_	_	4	punct	_	SpaceAfter=No
 
+
 # sent_id = FOLHA_DOC000038_SENT013
 # text = A morte causou reação em círculos acadêmicos e políticos.
 1	A	o	DET	_	Definite=Def|Gender=Fem|Number=Sing|PronType=Art	2	det	_	_
@@ -1106,6 +1015,7 @@
 9	políticos	político	ADJ	_	Gender=Masc|Number=Plur	7	conj	_	SpaceAfter=No
 10	.	.	PUNCT	_	_	3	punct	_	SpaceAfter=No
 
+
 # sent_id = FOLHA_DOC000048_SENT028
 # text = O que nós devemos evitar são decisões panfletárias, populistas, que não encontram respaldo no texto constitucional.
 1	O	o	PRON	_	Gender=Masc|Number=Sing|Person=3|PronType=Dem	7	nsubj	_	_
@@ -1117,7 +1027,7 @@
 7	decisões	decisão	NOUN	_	Gender=Fem|Number=Plur	0	root	_	_
 8	panfletárias	panfletário	ADJ	_	Gender=Fem|Number=Plur	7	amod	_	SpaceAfter=No
 9	,	,	PUNCT	_	_	10	punct	_	_
-10	populistas	populista	ADJ	_	Number=Plur	7	conj	_	SpaceAfter=No
+10	populistas	populista	ADJ	_	Number=Plur	8	conj	_	SpaceAfter=No
 11	,	,	PUNCT	_	_	14	punct	_	_
 12	que	que	PRON	_	PronType=Rel	14	nsubj	_	_
 13	não	não	ADV	_	_	14	advmod	_	_
@@ -1129,6 +1039,7 @@
 18	texto	texto	NOUN	_	Gender=Masc|Number=Sing	14	obl	_	_
 19	constitucional	constitucional	ADJ	_	Number=Sing	18	amod	_	SpaceAfter=No
 20	.	.	PUNCT	_	_	7	punct	_	SpaceAfter=No
+
 
 # sent_id = FOLHA_DOC000003_SENT012
 # text = À época, como atualmente, todas as linhas em expansão do Metrô de São Paulo e da CPTM estavam atrasadas.
@@ -1160,6 +1071,7 @@
 23	estavam	estar	AUX	_	Mood=Ind|Number=Plur|Person=3|Tense=Imp|VerbForm=Fin	24	cop	_	_
 24	atrasadas	atrasado	ADJ	_	Gender=Fem|Number=Plur|VerbForm=Part	0	root	_	SpaceAfter=No
 25	.	.	PUNCT	_	_	24	punct	_	SpaceAfter=No
+
 
 # sent_id = FOLHA_DOC000003_SENT016
 # text = Entre elas estavam dados sobre procedimentos e projetos técnicos e operacionais do abastecimento de água de São Paulo, além de dados da Polícia Militar e da Administração Penitenciária.
@@ -1200,6 +1112,7 @@
 32	Penitenciária	Penitenciária	PROPN	_	_	31	flat:name	_	SpaceAfter=No
 33	.	.	PUNCT	_	_	2	punct	_	SpaceAfter=No
 
+
 # sent_id = FOLHA_DOC000003_SENT022
 # text = Com participação de uma equipe de 21 profissionais, tem também entre seus autores os jornalistas Cláudia Collucci, Lalo de Almeida, Patricia Campos Mello, Reinaldo José Lopes e Gabriel Alves.
 1	Com	com	ADP	_	_	2	case	_	_
@@ -1237,6 +1150,7 @@
 33	Alves	Alves	PROPN	_	_	32	flat:name	_	SpaceAfter=No
 34	.	.	PUNCT	_	_	10	punct	_	SpaceAfter=No
 
+
 # sent_id = FOLHA_DOC000003_SENT025
 # text = Em seguida, o material traz relatos sobre mães e seus filhos e filhas, que nasceram com microcefalia.
 1	Em	em	ADP	_	_	2	case	_	_
@@ -1260,6 +1174,7 @@
 19	microcefalia	microcefalia	NOUN	_	Gender=Fem|Number=Sing	17	obl	_	SpaceAfter=No
 20	.	.	PUNCT	_	_	6	punct	_	SpaceAfter=No
 
+
 # sent_id = FOLHA_DOC000015_SENT004
 # text = Observamos um descolamento da política e da economia no país.
 1	Observamos	observar	VERB	_	Mood=Ind|Number=Plur|Person=1|Tense=Pres|VerbForm=Fin	0	root	_	_
@@ -1277,8 +1192,9 @@
 11-12	no	_	_	_	_	_	_	_	_
 11	em	em	ADP	_	_	13	case	_	_
 12	o	o	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	13	det	_	_
-13	país	país	NOUN	_	Gender=Masc|Number=Sing	6	nmod	_	SpaceAfter=No
+13	país	país	NOUN	_	Gender=Masc|Number=Sing	1	obl	_	SpaceAfter=No
 14	.	.	PUNCT	_	_	1	punct	_	SpaceAfter=No
+
 
 # sent_id = FOLHA_DOC000024_SENT043
 # text = Sobre a crítica do especialista, a EMTU disse que há 45 km de corredores e faixa preferencial para ônibus no sistema ABD (região do ABC).
@@ -1300,10 +1216,10 @@
 15	de	de	ADP	_	_	16	case	_	_
 16	corredores	corredor	NOUN	_	Gender=Masc|Number=Plur	14	nmod	_	_
 17	e	e	CCONJ	_	_	18	cc	_	_
-18	faixa	faixa	NOUN	_	Number=Sing	14	conj	_	_
+18	faixa	faixa	NOUN	_	Number=Sing	16	conj	_	_
 19	preferencial	preferencial	ADJ	_	Number=Sing	18	amod	_	_
 20	para	para	ADP	_	_	21	case	_	_
-21	ônibus	ônibus	NOUN	_	Gender=Masc	18	nmod	_	_
+21	ônibus	ônibus	NOUN	_	Gender=Masc	16	nmod	_	_
 22-23	no	_	_	_	_	_	_	_	_
 22	em	em	ADP	_	_	24	case	_	_
 23	o	o	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	24	det	_	_
@@ -1317,6 +1233,7 @@
 30	ABC	ABC	PROPN	_	_	27	nmod	_	SpaceAfter=No
 31	)	)	PUNCT	_	_	27	punct	_	SpaceAfter=No
 32	.	.	PUNCT	_	_	10	punct	_	SpaceAfter=No
+
 
 # sent_id = FOLHA_DOC000018_SENT032
 # text = A Bolívia seria a base de uma revolução que abarcaria esse país, a Argentina e o Peru.
@@ -1340,6 +1257,7 @@
 18	Peru	Peru	PROPN	_	_	12	conj	_	SpaceAfter=No
 19	.	.	PUNCT	_	_	5	punct	_	SpaceAfter=No
 
+
 # sent_id = FOLHA_DOC000015_SENT017
 # text = É preciso ter uma forma menos burocrática e mais rápida de se relacionar com os clientes.
 1	É	ser	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	2	cop	_	_
@@ -1360,6 +1278,7 @@
 16	clientes	cliente	NOUN	_	Number=Plur	13	obl	_	SpaceAfter=No
 17	.	.	PUNCT	_	_	2	punct	_	SpaceAfter=No
 
+
 # sent_id = FOLHA_DOC000011_SENT001
 # text = Dodge defende manter Joesley e Saud, da JBS, presos preventivamente.
 1	Dodge	Dodge	PROPN	_	_	2	nsubj	_	_
@@ -1377,6 +1296,7 @@
 12	presos	prender	VERB	_	Gender=Masc|Number=Plur|VerbForm=Part	3	xcomp	_	_
 13	preventivamente	preventivamente	ADV	_	_	12	advmod	_	SpaceAfter=No
 14	.	.	PUNCT	_	_	2	punct	_	SpaceAfter=No
+
 
 # sent_id = FOLHA_DOC000007_SENT007
 # text = Battisti foi detido na semana passada acusado de evasão de divisas ao tentar atravessar a fronteira com a Bolívia portando dólares e euros no valor equivalente a pouco mais de R$ 23 mil.
@@ -1421,6 +1341,7 @@
 36	mil	mil	NUM	_	NumType=Card	35	flat	_	SpaceAfter=No
 37	.	.	PUNCT	_	_	3	punct	_	SpaceAfter=No
 
+
 # sent_id = FOLHA_DOC000008_SENT005
 # text = O treinador ainda coleciona mais duas vitórias e uma derrota em jogos amistosos.
 1	O	o	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	2	det	_	_
@@ -1434,9 +1355,10 @@
 9	uma	um	NUM	_	Gender=Fem|NumType=Card	10	nummod	_	_
 10	derrota	derrota	NOUN	_	Gender=Fem|Number=Sing	7	conj	_	_
 11	em	em	ADP	_	_	12	case	_	_
-12	jogos	jogo	NOUN	_	Gender=Masc|Number=Plur	4	obl	_	_
+12	jogos	jogo	NOUN	_	Gender=Masc|Number=Plur	7	nmod	_	_
 13	amistosos	amistoso	ADJ	_	Gender=Masc|Number=Plur	12	amod	_	SpaceAfter=No
 14	.	.	PUNCT	_	_	4	punct	_	SpaceAfter=No
+
 
 # sent_id = FOLHA_DOC000032_SENT010
 # text = O sacolão precisa de uma reforma e de segurança, afirmou Enides.
@@ -1453,6 +1375,7 @@
 11	afirmou	afirmar	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	_
 12	Enides	Enides	PROPN	_	_	11	nsubj	_	SpaceAfter=No
 13	.	.	PUNCT	_	_	11	punct	_	SpaceAfter=No
+
 
 # sent_id = FOLHA_DOC000038_SENT010
 # text = Cancellier não era suspeito de desvio de recursos, mas de tentar intervir em uma apuração interna.
@@ -1475,6 +1398,7 @@
 17	interna	interno	ADJ	_	Gender=Fem|Number=Sing	16	amod	_	SpaceAfter=No
 18	.	.	PUNCT	_	_	4	punct	_	SpaceAfter=No
 
+
 # sent_id = FOLHA_DOC000008_SENT007
 # text = Temos que evoluir como técnicos, como dirigentes e como formadores de opinião.
 1	Temos	ter	VERB	_	Mood=Ind|Number=Plur|Person=1|Tense=Pres|VerbForm=Fin	0	root	_	_
@@ -1491,6 +1415,7 @@
 12	de	de	ADP	_	_	13	case	_	_
 13	opinião	opinião	NOUN	_	Gender=Fem|Number=Sing	11	nmod	_	SpaceAfter=No
 14	.	.	PUNCT	_	_	1	punct	_	SpaceAfter=No
+
 
 # sent_id = FOLHA_DOC002027_SENT005
 # text = No início, a empresária levou os salgados a bares, restaurantes e bufês infantis.
@@ -1513,6 +1438,7 @@
 16	infantis	infantil	ADJ	_	Number=Plur	15	amod	_	SpaceAfter=No
 17	.	.	PUNCT	_	_	7	punct	_	SpaceAfter=No
 
+
 # sent_id = FOLHA_DOC002027_SENT007
 # text = Desde 2013, são produzidos em fábrica própria, no Tatuapé (zona leste).
 1	Desde	desde	ADP	_	_	2	case	_	_
@@ -1533,6 +1459,7 @@
 15	leste	leste	ADJ	_	Number=Sing	14	amod	_	SpaceAfter=No
 16	)	)	PUNCT	_	_	14	punct	_	SpaceAfter=No
 17	.	.	PUNCT	_	_	5	punct	_	SpaceAfter=No
+
 
 # sent_id = FOLHA_DOC000011_SENT006
 # text = Para Dodge, a liberdade de Joesley e Saud oferece risco às investigações, pois eles são suspeitos de ocultar fatos e de sonegar provas que comprometem outras pessoas.
@@ -1569,6 +1496,7 @@
 30	pessoas	pessoa	NOUN	_	Gender=Fem|Number=Plur	28	obj	_	SpaceAfter=No
 31	.	.	PUNCT	_	_	10	punct	_	SpaceAfter=No
 
+
 # sent_id = FOLHA_DOC000047_SENT023
 # text = Nem os trabalhadores nem os camponeses aprenderam.
 1	Nem	nem	CCONJ	_	_	3	cc	_	_
@@ -1579,6 +1507,7 @@
 6	camponeses	camponês	NOUN	_	Gender=Masc|Number=Plur	3	conj	_	_
 7	aprenderam	aprender	VERB	_	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	0	root	_	SpaceAfter=No
 8	.	.	PUNCT	_	_	7	punct	_	SpaceAfter=No
+
 
 # sent_id = FOLHA_DOC000032_SENT004
 # text = Em três dos sacolões visitados, as frutas, verduras e legumes tinham boa variedade.
@@ -1601,6 +1530,7 @@
 16	variedade	variedade	NOUN	_	Gender=Fem|Number=Sing	14	obj	_	SpaceAfter=No
 17	.	.	PUNCT	_	_	14	punct	_	SpaceAfter=No
 
+
 # sent_id = FOLHA_DOC000007_SENT001
 # text = Posso sair do Brasil quando e como quiser, diz Cesare Battisti.
 1	Posso	poder	VERB	_	Mood=Ind|Number=Sing|Person=1|Tense=Pres|VerbForm=Fin	11	ccomp:speech	_	_
@@ -1619,23 +1549,6 @@
 13	Battisti	Battisti	PROPN	_	_	12	flat:name	_	SpaceAfter=No
 14	.	.	PUNCT	_	_	11	punct	_	SpaceAfter=No
 
-# sent_id = FOLHA_DOC000009_SENT010
-# text = Gilmar não participou e nem o ministro Marco Aurélio, que se declarou suspeito.
-1	Gilmar	Gilmar	PROPN	_	_	3	nsubj	_	_
-2	não	não	ADV	_	_	3	advmod	_	_
-3	participou	participar	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	_
-4	e	e	CCONJ	_	_	7	cc	_	_
-5	nem	nem	ADV	_	_	7	orphan	_	_
-6	o	o	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	7	det	_	_
-7	ministro	ministro	NOUN	_	Gender=Masc|Number=Sing	3	conj	_	_
-8	Marco	Marco	PROPN	_	_	7	nmod	_	_
-9	Aurélio	Aurélio	PROPN	_	_	8	flat:name	_	SpaceAfter=No
-10	,	,	PUNCT	_	_	13	punct	_	_
-11	que	que	PRON	_	PronType=Rel	13	nsubj	_	_
-12	se	se	PRON	_	Case=Acc|Person=3|PronType=Prs	13	obj	_	_
-13	declarou	declarar	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	7	acl:relcl	_	_
-14	suspeito	suspeito	NOUN	_	Gender=Masc|Number=Sing	13	xcomp	_	SpaceAfter=No
-15	.	.	PUNCT	_	_	3	punct	_	SpaceAfter=No
 
 # sent_id = FOLHA_DOC000010_SENT011
 # text = Em julho, o aplicativo, lançado em 2009 e adquirido por US$ 19 milhões pelo Facebook em 2014, comemorou a marca de um bilhão de usuários ativos por dia.
@@ -1674,28 +1587,6 @@
 32	dia	dia	NOUN	_	Gender=Masc|Number=Sing	27	nmod	_	SpaceAfter=No
 33	.	.	PUNCT	_	_	22	punct	_	SpaceAfter=No
 
-# sent_id = FOLHA_DOC000015_SENT022
-# text = Antes, porém, é preciso ter certeza que haverá estações de carregamento elétrico, e em quais estados.
-1	Antes	antes	ADV	_	_	6	advmod	_	SpaceAfter=No
-2	,	,	PUNCT	_	_	3	punct	_	_
-3	porém	porém	CCONJ	_	_	6	cc	_	SpaceAfter=No
-4	,	,	PUNCT	_	_	3	punct	_	_
-5	é	ser	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	6	cop	_	_
-6	preciso	preciso	ADJ	_	Gender=Masc|Number=Sing	0	root	_	_
-7	ter	ter	VERB	_	VerbForm=Inf	6	csubj	_	_
-8	certeza	certeza	NOUN	_	Gender=Fem|Number=Sing	7	obj	_	_
-9	que	que	SCONJ	_	_	10	mark	_	_
-10	haverá	haver	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Fut|VerbForm=Fin	8	acl	_	_
-11	estações	estação	NOUN	_	Gender=Fem|Number=Plur	10	obj	_	_
-12	de	de	ADP	_	_	13	case	_	_
-13	carregamento	carregamento	NOUN	_	Gender=Masc|Number=Sing	11	nmod	_	_
-14	elétrico	elétrico	ADJ	_	Gender=Masc|Number=Sing	13	amod	_	SpaceAfter=No
-15	,	,	PUNCT	_	_	19	punct	_	_
-16	e	e	CCONJ	_	_	19	cc	_	_
-17	em	em	ADP	_	_	19	case	_	_
-18	quais	qual	DET	_	Number=Plur|PronType=Int	19	det	_	_
-19	estados	estado	NOUN	_	Gender=Masc|Number=Plur	6	parataxis	_	SpaceAfter=No
-20	.	.	PUNCT	_	_	6	punct	_	SpaceAfter=No
 
 # sent_id = FOLHA_DOC000048_SENT015
 # text = Os partidos são entidades privadas e assim devem funcionar, disse.
@@ -1712,3 +1603,308 @@
 11	disse	dizer	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	SpaceAfter=No
 12	.	.	PUNCT	_	_	11	punct	_	SpaceAfter=No
 
+
+
+
+# sent_id = FOLHA_DOC004060_SENT030
+# text = O projeto vai agora para a Câmara, onde será votado nesta sexta-feira (8) e deve ser aprovado com facilidade.
+# timestamp = 1696877111481.542
+1	O	o	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	2	det	_	_
+2	projeto	projeto	NOUN	_	Gender=Masc|Number=Sing	3	nsubj	_	_
+3	vai	ir	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	_
+4	agora	agora	ADV	_	_	3	advmod	_	_
+5	para	para	ADP	_	_	7	case	_	_
+6	a	o	DET	_	Definite=Def|Gender=Fem|Number=Sing|PronType=Art	7	det	_	_
+7	Câmara	Câmara	PROPN	_	_	3	obl	_	SpaceAfter=No
+8	,	,	PUNCT	_	_	11	punct	_	_
+9	onde	onde	ADV	_	_	11	advmod	_	_
+10	será	ser	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Fut|VerbForm=Fin	11	aux:pass	_	_
+11	votado	votar	VERB	_	Gender=Masc|Number=Sing|VerbForm=Part|Voice=Pass	7	acl:relcl	_	_
+12-13	nesta	_	_	_	_	_	_	_	_
+12	em	em	ADP	_	_	14	case	_	_
+13	esta	este	DET	_	Gender=Fem|Number=Sing|PronType=Dem	14	det	_	_
+14	sexta-feira	sexta-feira	NOUN	_	Gender=Fem|Number=Sing	11	obl	_	_
+15	(	(	PUNCT	_	_	16	punct	_	SpaceAfter=No
+16	8	8	NUM	_	NumType=Card	14	appos	_	SpaceAfter=No
+17	)	)	PUNCT	_	_	16	punct	_	_
+18	e	e	CCONJ	_	_	19	cc	_	_
+19	deve	dever	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	11	conj	_	_
+20	ser	ser	AUX	_	VerbForm=Inf	21	aux:pass	_	_
+21	aprovado	aprovar	VERB	_	Gender=Masc|Number=Sing|VerbForm=Part|Voice=Pass	19	xcomp	_	_
+22	com	com	ADP	_	_	23	case	_	_
+23	facilidade	facilidade	NOUN	_	Gender=Fem|Number=Sing	21	obl	_	SpaceAfter=No
+24	.	.	PUNCT	_	_	3	punct	_	SpaceAfter=No
+
+
+# sent_id = FOLHA_DOC003066_SENT021
+# text = A Cabify diz que o seu motorista não tem a opção de cancelar a viagem no aeroporto, onde a fila do aplicativo existe desde junho de 2016.
+# timestamp = 1696877111481.542
+1	A	o	DET	_	Definite=Def|Gender=Fem|Number=Sing|PronType=Art	2	det	_	_
+2	Cabify	Cabify	PROPN	_	_	3	nsubj	_	_
+3	diz	dizer	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	_
+4	que	que	SCONJ	_	_	9	mark	_	_
+5	o	o	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	7	det	_	_
+6	seu	seu	DET	_	Gender=Masc|Number=Sing|Person=3|Poss=Yes|PronType=Prs	7	det	_	_
+7	motorista	motorista	NOUN	_	Number=Sing	9	nsubj	_	_
+8	não	não	ADV	_	_	9	advmod	_	_
+9	tem	ter	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	3	ccomp	_	_
+10	a	o	DET	_	Definite=Def|Gender=Fem|Number=Sing|PronType=Art	11	det	_	_
+11	opção	opção	NOUN	_	Gender=Fem|Number=Sing	9	obj	_	_
+12	de	de	ADP	_	_	13	mark	_	_
+13	cancelar	cancelar	VERB	_	VerbForm=Inf	11	acl	_	_
+14	a	o	DET	_	Definite=Def|Gender=Fem|Number=Sing|PronType=Art	15	det	_	_
+15	viagem	viagem	NOUN	_	Gender=Fem|Number=Sing	13	obj	_	_
+16-17	no	_	_	_	_	_	_	_	_
+16	em	em	ADP	_	_	18	case	_	_
+17	o	o	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	18	det	_	_
+18	aeroporto	aeroporto	NOUN	_	Gender=Masc|Number=Sing	13	obl	_	SpaceAfter=No
+19	,	,	PUNCT	_	_	26	punct	_	_
+20	onde	onde	ADV	_	_	26	advmod	_	_
+21	a	o	DET	_	Definite=Def|Gender=Fem|Number=Sing|PronType=Art	22	det	_	_
+22	fila	fila	NOUN	_	Number=Sing	26	nsubj	_	_
+23-24	do	_	_	_	_	_	_	_	_
+23	de	de	ADP	_	_	25	case	_	_
+24	o	o	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	25	det	_	_
+25	aplicativo	aplicativo	NOUN	_	Gender=Masc|Number=Sing	22	nmod	_	_
+26	existe	existir	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	18	acl:relcl	_	_
+27	desde	desde	ADP	_	_	28	case	_	_
+28	junho	junho	NOUN	_	Gender=Masc|Number=Sing	26	obl	_	_
+29	de	de	ADP	_	_	30	case	_	_
+30	2016	2016	NUM	_	NumType=Card	28	nmod	_	SpaceAfter=No
+31	.	.	PUNCT	_	_	3	punct	_	SpaceAfter=No
+
+
+# sent_id = FOLHA_DOC004135_SENT004
+# text = Palocci ganhou destaque no partido em 1992, quando foi eleito prefeito de Ribeirão Preto.
+# timestamp = 1696877111481.542
+1	Palocci	Palocci	PROPN	_	_	2	nsubj	_	_
+2	ganhou	ganhar	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	_
+3	destaque	destaque	NOUN	_	Gender=Masc|Number=Sing	2	obj	_	_
+4-5	no	_	_	_	_	_	_	_	_
+4	em	em	ADP	_	_	6	case	_	_
+5	o	o	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	6	det	_	_
+6	partido	partido	NOUN	_	Gender=Masc|Number=Sing	2	obl	_	_
+7	em	em	ADP	_	_	8	case	_	_
+8	1992	1992	NUM	_	NumType=Card	2	obl	_	SpaceAfter=No
+9	,	,	PUNCT	_	_	12	punct	_	_
+10	quando	quando	ADV	_	_	12	advmod	_	_
+11	foi	ser	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	12	aux:pass	_	_
+12	eleito	eleger	VERB	_	Gender=Masc|Number=Sing|VerbForm=Part|Voice=Pass	8	acl:relcl	_	_
+13	prefeito	prefeito	NOUN	_	Gender=Masc|Number=Sing	12	xcomp	_	_
+14	de	de	ADP	_	_	15	case	_	_
+15	Ribeirão	Ribeirão	PROPN	_	_	13	nmod	_	_
+16	Preto	Preto	PROPN	_	_	15	flat:name	_	SpaceAfter=No
+17	.	.	PUNCT	_	_	2	punct	_	SpaceAfter=No
+
+
+# sent_id = FOLHA_DOC004085_SENT010
+# text = O atual episódio de violência começou no dia 25 de agosto, quando 150 rebeldes rohingyas atacaram 20 delegacias de polícia.
+1	O	o	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	3	det	_	_
+2	atual	atual	ADJ	_	Number=Sing	3	amod	_	_
+3	episódio	episódio	NOUN	_	Gender=Masc|Number=Sing	6	nsubj	_	_
+4	de	de	ADP	_	_	5	case	_	_
+5	violência	violência	NOUN	_	Gender=Fem|Number=Sing	3	nmod	_	_
+6	começou	começar	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	_
+7-8	no	_	_	_	_	_	_	_	_
+7	em	em	ADP	_	_	9	case	_	_
+8	o	o	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	9	det	_	_
+9	dia	dia	NOUN	_	Gender=Masc|Number=Sing	6	obl	_	_
+10	25	25	NUM	_	NumType=Card	9	nmod	_	_
+11	de	de	ADP	_	_	12	case	_	_
+12	agosto	agosto	NOUN	_	Gender=Masc|Number=Sing	10	nmod	_	SpaceAfter=No
+13	,	,	PUNCT	_	_	18	punct	_	_
+14	quando	quando	ADV	_	_	18	advmod	_	_
+15	150	150	NUM	_	NumType=Card	16	nummod	_	_
+16	rebeldes	rebelde	NOUN	_	Number=Plur	18	nsubj	_	_
+17	rohingyas	rohingyas	X	_	Foreign=Yes	16	nmod	_	_
+18	atacaram	atacar	VERB	_	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	9	acl:relcl	_	_
+19	20	20	NUM	_	NumType=Card	20	nummod	_	_
+20	delegacias	delegacia	NOUN	_	Gender=Fem|Number=Plur	18	obj	_	_
+21	de	de	ADP	_	_	22	case	_	_
+22	polícia	polícia	NOUN	_	Number=Sing	20	nmod	_	SpaceAfter=No
+23	.	.	PUNCT	_	_	6	punct	_	SpaceAfter=No
+
+
+# sent_id = FOLHA_DOC004033_SENT006
+# text = Seu ponto mais baixo na listagem foi registrado em julho passado, quando apareceu apenas como número 957 do mundo.
+1	Seu	seu	DET	_	Gender=Masc|Number=Sing|Person=3|Poss=Yes|PronType=Prs	2	det	_	_
+2	ponto	ponto	NOUN	_	Gender=Masc|Number=Sing	9	nsubj:pass	_	_
+3	mais	mais	ADV	_	_	4	advmod	_	_
+4	baixo	baixo	ADJ	_	Gender=Masc|Number=Sing	2	amod	_	_
+5-6	na	_	_	_	_	_	_	_	_
+5	em	em	ADP	_	_	7	case	_	_
+6	a	o	DET	_	Definite=Def|Gender=Fem|Number=Sing|PronType=Art	7	det	_	_
+7	listagem	listagem	NOUN	_	Gender=Fem|Number=Sing	2	nmod	_	_
+8	foi	ser	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	9	aux:pass	_	_
+9	registrado	registrar	VERB	_	Gender=Masc|Number=Sing|VerbForm=Part|Voice=Pass	0	root	_	_
+10	em	em	ADP	_	_	11	case	_	_
+11	julho	julho	NOUN	_	Gender=Masc|Number=Sing	9	obl	_	_
+12	passado	passado	ADJ	_	Gender=Masc|Number=Sing|VerbForm=Part	11	amod	_	SpaceAfter=No
+13	,	,	PUNCT	_	_	15	punct	_	_
+14	quando	quando	ADV	_	_	15	advmod	_	_
+15	apareceu	aparecer	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	11	acl:relcl	_	_
+16	apenas	apenas	ADV	_	_	18	advmod	_	_
+17	como	como	ADP	_	_	18	case	_	_
+18	número	número	NOUN	_	Gender=Masc|Number=Sing	15	obl	_	_
+19	957	957	NUM	_	NumType=Card	18	nmod	_	_
+20-21	do	_	_	_	_	_	_	_	_
+20	de	de	ADP	_	_	22	case	_	_
+21	o	o	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	22	det	_	_
+22	mundo	mundo	NOUN	_	Gender=Masc|Number=Sing	18	nmod	_	SpaceAfter=No
+23	.	.	PUNCT	_	_	9	punct	_	SpaceAfter=No
+
+
+# sent_id = FOLHA_DOC003194_SENT014
+# text = Paul deve transformar a plateia do Allianz Parque num karaokê gigante, principalmente na parte final do show, quando emenda uns oito sucessos dos Beatles.
+# timestamp = 1696877111481.542
+1	Paul	Paul	PROPN	_	_	2	nsubj	_	_
+2	deve	dever	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	_
+3	transformar	transformar	VERB	_	VerbForm=Inf	2	xcomp	_	_
+4	a	o	DET	_	Definite=Def|Gender=Fem|Number=Sing|PronType=Art	5	det	_	_
+5	plateia	plateia	NOUN	_	Gender=Fem|Number=Sing	3	obj	_	_
+6-7	do	_	_	_	_	_	_	_	_
+6	de	de	ADP	_	_	8	case	_	_
+7	o	o	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	8	det	_	_
+8	Allianz	Allianz	PROPN	_	_	5	nmod	_	_
+9	Parque	Parque	PROPN	_	_	8	flat:name	_	_
+10-11	num	_	_	_	_	_	_	_	_
+10	em	em	ADP	_	_	12	case	_	_
+11	um	um	DET	_	Definite=Ind|Gender=Masc|Number=Sing|PronType=Art	12	det	_	_
+12	karaokê	karaokê	NOUN	_	Gender=Masc|Number=Sing	3	obl	_	_
+13	gigante	gigante	ADJ	_	Number=Sing	12	amod	_	SpaceAfter=No
+14	,	,	PUNCT	_	_	18	punct	_	_
+15	principalmente	principalmente	ADV	_	_	18	advmod	_	_
+16-17	na	_	_	_	_	_	_	_	_
+16	em	em	ADP	_	_	18	case	_	_
+17	a	o	DET	_	Definite=Def|Gender=Fem|Number=Sing|PronType=Art	18	det	_	_
+18	parte	parte	NOUN	_	Gender=Fem|Number=Sing	3	obl	_	_
+19	final	final	ADJ	_	Number=Sing	18	amod	_	_
+20-21	do	_	_	_	_	_	_	_	_
+20	de	de	ADP	_	_	22	case	_	_
+21	o	o	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	22	det	_	_
+22	show	show	NOUN	_	Gender=Masc|Number=Sing	18	nmod	_	SpaceAfter=No
+23	,	,	PUNCT	_	_	18	punct	_	_
+24	quando	quando	ADV	_	_	25	advmod	_	_
+25	emenda	emendar	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	18	acl:relcl	_	_
+26	uns	um	DET	_	Definite=Ind|Gender=Masc|Number=Plur|PronType=Art	28	det	_	_
+27	oito	oito	NUM	_	NumType=Card	28	nummod	_	_
+28	sucessos	sucesso	NOUN	_	Gender=Masc|Number=Plur	25	obj	_	_
+29-30	dos	_	_	_	_	_	_	_	_
+29	de	de	ADP	_	_	31	case	_	_
+30	os	o	DET	_	Definite=Def|Gender=Masc|Number=Plur|PronType=Art	31	det	_	_
+31	Beatles	Beatles	PROPN	_	_	28	nmod	_	SpaceAfter=No
+32	.	.	PUNCT	_	_	2	punct	_	SpaceAfter=No
+
+
+# sent_id = FOLHA_DOC003112_SENT022
+# text = O banco tem direito a duas cadeiras no colegiado, mas uma delas está vaga desde a semana passada, quando o conselheiro anterior renunciou.
+# timestamp = 1696877111481.542
+1	O	o	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	2	det	_	_
+2	banco	banco	NOUN	_	Gender=Masc|Number=Sing	3	nsubj	_	_
+3	tem	ter	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	_
+4	direito	direito	NOUN	_	Gender=Masc|Number=Sing	3	obj	_	_
+5	a	a	ADP	_	_	7	case	_	_
+6	duas	dois	NUM	_	Gender=Fem|NumType=Card	7	nummod	_	_
+7	cadeiras	cadeira	NOUN	_	Gender=Fem|Number=Plur	4	nmod	_	_
+8-9	no	_	_	_	_	_	_	_	_
+8	em	em	ADP	_	_	10	case	_	_
+9	o	o	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	10	det	_	_
+10	colegiado	colegiado	NOUN	_	Gender=Masc|Number=Sing	7	nmod	_	SpaceAfter=No
+11	,	,	PUNCT	_	_	17	punct	_	_
+12	mas	mas	CCONJ	_	_	17	cc	_	_
+13	uma	um	NUM	_	Gender=Fem|NumType=Card	17	nsubj	_	_
+14-15	delas	_	_	_	_	_	_	_	_
+14	de	de	ADP	_	_	15	case	_	_
+15	elas	ele	PRON	_	Case=Nom|Gender=Fem|Number=Plur|Person=3|PronType=Prs	13	nmod	_	_
+16	está	estar	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	17	cop	_	_
+17	vaga	vago	ADJ	_	Gender=Fem|Number=Sing	3	conj	_	_
+18	desde	desde	ADP	_	_	20	case	_	_
+19	a	o	DET	_	Definite=Def|Gender=Fem|Number=Sing|PronType=Art	20	det	_	_
+20	semana	semana	NOUN	_	Gender=Fem|Number=Sing	17	obl	_	_
+21	passada	passado	ADJ	_	Gender=Fem|Number=Sing|VerbForm=Part	20	amod	_	SpaceAfter=No
+22	,	,	PUNCT	_	_	27	punct	_	_
+23	quando	quando	ADV	_	_	27	advmod	_	_
+24	o	o	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	25	det	_	_
+25	conselheiro	conselheiro	NOUN	_	Gender=Masc|Number=Sing	27	nsubj	_	_
+26	anterior	anterior	ADJ	_	Number=Sing	25	amod	_	_
+27	renunciou	renunciar	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	20	acl:relcl	_	SpaceAfter=No
+28	.	.	PUNCT	_	_	3	punct	_	SpaceAfter=No
+
+
+ sent_id = FOLHA_DOC003091_SENT008
+# text = No jogo deste domingo, quando Neymar sofreu uma falta perto da área, Daniel Alves pegou a bola e foi entregá-la ao compatriota.
+# timestamp = 1696877111481.542
+1-2	No	_	_	_	_	_	_	_	_
+1	Em	em	ADP	_	_	3	case	_	_
+2	o	o	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	3	det	_	_
+3	jogo	jogo	NOUN	_	Gender=Masc|Number=Sing	20	obl	_	_
+4-5	deste	_	_	_	_	_	_	_	_
+4	de	de	ADP	_	_	6	case	_	_
+5	este	este	DET	_	Gender=Masc|Number=Sing|PronType=Dem	6	det	_	_
+6	domingo	domingo	NOUN	_	Gender=Masc|Number=Sing	3	nmod	_	SpaceAfter=No
+7	,	,	PUNCT	_	_	3	punct	_	_
+8	quando	quando	SCONJ	_	_	10	mark	_	_
+9	Neymar	Neymar	PROPN	_	_	10	nsubj	_	_
+10	sofreu	sofrer	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	20	advcl	_	_
+11	uma	um	DET	_	Definite=Ind|Gender=Fem|Number=Sing|PronType=Art	12	det	_	_
+12	falta	falta	NOUN	_	Gender=Fem|Number=Sing	10	obj	_	_
+13	perto	perto	ADV	_	_	10	advmod	_	_
+14-15	da	_	_	_	_	_	_	_	_
+14	de	de	ADP	_	_	16	case	_	_
+15	a	o	DET	_	Definite=Def|Gender=Fem|Number=Sing|PronType=Art	16	det	_	_
+16	área	área	NOUN	_	Gender=Fem|Number=Sing	13	obl	_	SpaceAfter=No
+17	,	,	PUNCT	_	_	10	punct	_	_
+18	Daniel	Daniel	PROPN	_	_	20	nsubj	_	_
+19	Alves	Alves	PROPN	_	_	18	flat:name	_	_
+20	pegou	pegar	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	_
+21	a	o	DET	_	Definite=Def|Gender=Fem|Number=Sing|PronType=Art	22	det	_	_
+22	bola	bola	NOUN	_	Gender=Fem|Number=Sing	20	obj	_	_
+23	e	e	CCONJ	_	_	25	cc	_	_
+24	foi	ir	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	25	aux	_	_
+25-26	entregá-la	_	_	_	_	_	_	_	_
+25	entregar	entregar	VERB	_	VerbForm=Inf	20	conj	_	_
+26	la	lo	PRON	_	Case=Acc|Gender=Fem|Number=Sing|Person=3|PronType=Prs	25	obj	_	_
+27-28	ao	_	_	_	_	_	_	_	_
+27	a	a	ADP	_	_	29	case	_	_
+28	o	o	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	29	det	_	_
+29	compatriota	compatriota	NOUN	_	Number=Sing	25	obl	_	SpaceAfter=No
+30	.	.	PUNCT	_	_	20	punct	_	SpaceAfter=No
+
+
+sent_id = FOLHA_DOC003054_SENT005
+# text = Do valor pago durante a Lava Jato, R$ 1,3 milhão foram entregues por Funaro quando Cunha era o presidente da Câmara dos Deputados, em 2015.
+# timestamp = 1696877111481.542
+1-2	Do	_	_	_	_	_	_	_	_
+1	De	de	ADP	_	_	3	case	_	_
+2	o	o	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	3	det	_	_
+3	valor	valor	NOUN	_	Gender=Masc|Number=Sing	14	obl	_	_
+4	pago	pagar	VERB	_	Gender=Masc|Number=Sing|VerbForm=Part|Voice=Pass	3	acl	_	_
+5	durante	durante	ADP	_	_	7	case	_	_
+6	a	o	DET	_	Definite=Def|Gender=Fem|Number=Sing|PronType=Art	7	det	_	_
+7	Lava	Lava	PROPN	_	_	4	obl	_	_
+8	Jato	Jato	PROPN	_	_	7	flat:name	_	SpaceAfter=No
+9	,	,	PUNCT	_	_	3	punct	_	_
+10	R$	R$	SYM	_	_	12	nmod	_	_
+11	1,3	1,3	NUM	_	NumType=Card	12	nummod	_	_
+12	milhão	milhão	NOUN	_	Gender=Masc|Number=Sing	14	nsubj:pass	_	_
+13	foram	ser	AUX	_	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	14	aux:pass	_	_
+14	entregues	entregar	VERB	_	Gender=Masc|Number=Plur|VerbForm=Part|Voice=Pass	0	root	_	_
+15	por	por	ADP	_	_	16	case	_	_
+16	Funaro	Funaro	PROPN	_	_	14	obl:agent	_	_
+17	quando	quando	SCONJ	_	_	21	mark	_	Proper=Yes
+18	Cunha	Cunha	PROPN	_	_	21	nsubj	_	_
+19	era	ser	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Imp|VerbForm=Fin	21	cop	_	_
+20	o	o	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	21	det	_	_
+21	presidente	presidente	NOUN	_	Number=Sing	14	advcl	_	_
+22-23	da	_	_	_	_	_	_	_	_
+22	de	de	ADP	_	_	24	case	_	_
+23	a	o	DET	_	Definite=Def|Gender=Fem|Number=Sing|PronType=Art	24	det	_	_
+24	Câmara	Câmara	PROPN	_	_	21	nmod	_	_
+25-26	dos	_	_	_	_	_	_	_	_
+25	de	de	ADP	_	_	27	case	_	_
+26	os	o	DET	_	Definite=Def|Gender=Masc|Number=Plur|PronType=Art	27	det	_	_
+27	Deputados	Deputados	PROPN	_	_	24	flat:name	_	SpaceAfter=No
+28	,	,	PUNCT	_	_	30	punct	_	_
+29	em	em	ADP	_	_	30	case	_	_
+30	2015	2015	NUM	_	NumType=Card	21	nmod	_	SpaceAfter=No
+31	.	.	PUNCT	_	_	14	punct	_	SpaceAfter=No

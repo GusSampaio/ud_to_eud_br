@@ -1074,16 +1074,6 @@ package coord_gov{
 }
 
 % =============================================================================================
-% Propagation of ROOT dependencies on all conjuncts of a coordination
-rule coord_gov_root{
-  pattern{
-     CONJ1 -[1=conj]-> CONJ2;
-     H -[1=root]-> CONJ1}
-  without{ H -[E:root]-> CONJ2}
-  commands{ add_edge H -[E:root]-> CONJ2}
-}
-
-% =============================================================================================
 % For null subject languages, mark the verbs without explicit subject.
 package null_subject{
   rule mark_null_subject{
@@ -1722,7 +1712,6 @@ package copy_basic_enhanced{
     pattern{GOV -[xcomp]-> DEP}
     pattern{e:SUBJ_GOV -[nsubj]-> GOV}
     without{GOV -[obj]-> DEP2}
-    
     commands{add_edge f:DEP -> SUBJ_GOV; f.label = e.label; f.enhanced=yes}
   }
 
@@ -1843,7 +1832,6 @@ strat ud_to_mix{
     Onf(rel_pron),
     Onf(deep_subj_ud),
     Onf(coord_gov),
-    Onf(coord_gov_root),
     Onf(null_subject),
     Onf(coord_dep_left),
     Onf(coord_dep_left_aux),
