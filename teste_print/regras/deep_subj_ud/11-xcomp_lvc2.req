@@ -1,0 +1,7 @@
+pattern{
+V[Dupos=VERB]; V -[obj:lvc]-> OBJ;
+DPRED[Dupos<>PRON|PROPN|X];
+V -[1=xcomp]-> DPRED;
+V -[1=nsubj]-> SUBJ}
+without{DPRED[NullSubject=Yes]}
+without{DPRED -[1=csubj|nsubj|det]-> *}

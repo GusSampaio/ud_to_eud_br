@@ -1,0 +1,4 @@
+pattern{
+  e:H -[ANTREL]-> PRO;
+  H1 -[acl:relcl|advcl:cleft]-> H}
+without{H1 -[E:ref]-> PRO}

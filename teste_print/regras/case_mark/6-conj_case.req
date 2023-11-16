@@ -1,0 +1,7 @@
+pattern{
+CONJ1 -[1=conj]-> CONJ2;
+CONJ1 -[1=case]-> *;
+CONJ1[Mark]}
+without{CONJ1 -[MARK]-> *}% The Mark feature of CONJ1 must be complete. %Ex: newsgroup-groups.google.com_citiesguide_c6edd53b8aaceb4c_ENG_20051102_022300-0006 - they tie up with some of the airlines for a certain period based on the discount[CONJ1] and services[CONJ2]
+without{CONJ2 -[1=case|mark]-> *}
+without{CONJ2[Mark]}

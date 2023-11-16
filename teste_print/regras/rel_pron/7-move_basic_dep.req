@@ -1,0 +1,4 @@
+pattern{
+  ANT -[E:ref]-> PRO;
+  e: H-[1 <> advmod|det|ref, !enhanced]-> PRO}
+without{ H -> ANT}

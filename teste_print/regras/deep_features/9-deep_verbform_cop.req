@@ -1,0 +1,1 @@
+pattern{COP[DVerbForm]; PRED -[1=cop]-> COP; PRED[!DVerbForm]}

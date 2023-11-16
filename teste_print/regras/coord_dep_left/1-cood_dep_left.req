@@ -1,0 +1,5 @@
+pattern{
+     CONJ1 -[1=conj]-> CONJ2;
+     e:CONJ1 -[1=advcl|discourse|parataxis|vocative]-> D;
+     D << CONJ1}
+without{CONJ2 -> D}

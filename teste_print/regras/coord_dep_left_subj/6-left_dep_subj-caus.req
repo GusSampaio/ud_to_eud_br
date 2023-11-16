@@ -1,0 +1,10 @@
+pattern{
+CONJ1 -[1=conj]-> CONJ2;
+CONJ2[!NullSubject];
+e:CONJ1 -[1=csubj|nsubj]-> D; D << CONJ1;
+CONJ2 -[aux:caus|E:aux:caus]-> *}
+without{ CONJ2 -[expl:subj|E:expl:subj]-> SUBJ; CONJ2 -[1=cc|punct]-> C; C << SUBJ}
+without{ CONJ2 -[1=csubj|nsubj]-> SUBJ; CONJ2 -[1=cc|punct]-> C; C << SUBJ}
+without{ * -[E:ref]-> D} % D is not a relative pronoun.
+without{CONJ2 -[1=csubj|nsubj, !enhanced]-> *}
+without{CONJ2 -[1=csubj|nsubj, enhanced=yes]-> D}

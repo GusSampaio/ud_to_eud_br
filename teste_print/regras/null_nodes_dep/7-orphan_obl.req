@@ -1,0 +1,6 @@
+pattern{
+  CONJ2[DVerbForm,wordform="__EMPTY__"];
+  CONJ2 -[1=csubj|nsubj|obj|obl|xcomp]-> HEAD;
+  e: HEAD -[orphan]-> OBL;
+  OBL -[case]-> *}
+without{CONJ2 -> OBL}

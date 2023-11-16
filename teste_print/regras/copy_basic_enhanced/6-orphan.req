@@ -1,0 +1,7 @@
+pattern{H -[1=orphan,!enhanced]-> D}
+without{
+H1 -[1=conj|parataxis, !enhanced]-> H;
+H1 -[1=conj|parataxis, enhanced=yes]-> NULL;
+NULL[wordform= __EMPTY__];
+NULL -> H}
+without{H -[1=orphan,enhanced=yes]-> D}

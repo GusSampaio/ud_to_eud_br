@@ -1,0 +1,7 @@
+pattern{
+CONJ1 -[1=conj]-> CONJ2;
+H -[1=advcl]-> CONJ1;
+CONJ1 -[mark]-> *}
+without{CONJ2 -[case]-> *}
+without{ CONJ1 << H; H << CONJ2}
+without{H -> CONJ2}

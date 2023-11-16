@@ -1,0 +1,4 @@
+pattern{e: H -[1=nmod|obl, 2=*,!3,enhanced=yes]-> D; D[Case=lex.case]}
+without{e.2=lex.labl}
+without{H -[E:acl:relcl]->D}
+

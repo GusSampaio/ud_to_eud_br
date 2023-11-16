@@ -1,0 +1,5 @@
+pattern{
+  CONJ1 -[1=conj]-> CONJ2;
+  e:CONJ1 -[case]-> D; D << CONJ1;
+  CONJ2[Dupos=NOUN|NUM|PRON|PROPN|X]}
+without{ CONJ2 -[case|E:case]-> *}

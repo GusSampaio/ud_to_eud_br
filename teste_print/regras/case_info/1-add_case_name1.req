@@ -1,0 +1,4 @@
+pattern{e: H -[1 = acl|advcl|nmod|obl, !2]-> D; D[Mark]}
+without{D -[E:ref]-> PRO; H -> PRO}% The relation e is not a relation targeting a relative pronoun, which has moved to the antecedent.
+without{H -[enhanced=yes]-> D}
+without{* -[E:ref]-> D}

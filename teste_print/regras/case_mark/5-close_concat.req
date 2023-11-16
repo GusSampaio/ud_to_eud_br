@@ -1,0 +1,2 @@
+pattern{e:H -[MARK]-> D}
+without{ H -[1=case|mark]-> D1; D < D1;D1[lemma<>"'"|"'s"|"’s"|"°"] }

@@ -1,0 +1,5 @@
+pattern{
+CONJ1 -[1=conj]-> CONJ2;
+H -[acl:relcl]-> CONJ1}
+without{H -> CONJ2}
+without{ CONJ1 << H; H << CONJ2}

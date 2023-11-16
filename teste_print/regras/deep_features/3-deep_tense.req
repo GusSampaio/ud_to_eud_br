@@ -1,0 +1,3 @@
+pattern{V[Tense]}
+without{V -[1=aux]-> AUX}
+without{V[DTense]}

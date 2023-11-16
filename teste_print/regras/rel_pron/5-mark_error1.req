@@ -1,0 +1,4 @@
+pattern{
+  e:H -[ANTREL]-> PRO;
+  H1 -[1=root]-> H}
+without{PRO[ErrorPronType]}

@@ -1,0 +1,4 @@
+pattern{
+  ANT -[E:ref]-> DET;
+  e: H-[1=det, !enhanced]-> DET}
+without{ H -> ANT}

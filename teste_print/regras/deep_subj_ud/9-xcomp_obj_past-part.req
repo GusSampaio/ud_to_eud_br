@@ -1,0 +1,7 @@
+pattern{
+DPRED[DVerbForm=Part,DTense=Past];
+PRED -[1=xcomp]-> DPRED;
+PRED -[1=obj]-> OBJ}
+without{ * -[E:ref]-> OBJ}% When a relative pronoun is object, its antecedent is assigned the function of enhanced subject
+without{DPRED[NullSubject=Yes]}
+without{DPRED -[1=csubj|nsubj]-> *}

@@ -1,0 +1,2 @@
+pattern{V[DVerbForm=Fin, Person=1|2, !NullSubject]}
+without{ V -[1=csubj|nsubj]-> *}

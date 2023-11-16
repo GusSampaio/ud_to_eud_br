@@ -1,0 +1,34 @@
+rule case_add1_basic(lex from "cases.lp")
+pattern{e: H -[1=nmod|obl,!2,!enhanced]-> D; D[Case=lex.case]}
+without{H -[enhanced=yes]-> D}
+without{D[PronType=Rel|"Int,Rel"]}
+without{H -[1=acl|advcl|nmod|obl, enhanced=yes]-> D}
+commands{add_edge f: H -> D; f.enhanced=yes; f.1=e.1; f.2=lex.labl}
+
+rule case_add1_enhanced(lex from "cases.lp")
+pattern{e: H -[1=nmod|obl,!2,enhanced=yes]-> D; D[Case=lex.case]}
+commands{e.2=lex.labl}
+
+rule case_add2_basic(lex from "cases.lp")
+pattern{e: H -[1=nmod|obl,2=*,!3, !enhanced]-> D; D[Case=lex.case]}
+without{D[PronType=Rel|"Int,Rel"]}
+without{H -[acl:relcl]->D}
+without{H -[enhanced=yes]-> D}
+commands{add_edge f: H -> D; f.enhanced=yes; f.1=e.1; f.2=e.2; f.3=lex.labl}
+
+rule case_add2_enhanced(lex from "cases.lp")
+pattern{e: H -[1=nmod|obl, 2=*,!3,enhanced=yes]-> D; D[Case=lex.case]}
+without{e.2=lex.labl}
+without{H -[E:acl:relcl]->D}
+commands{e.3=lex.labl}
+
+rule case_add3_basic(lex from "cases.lp")
+pattern{e: H -[1=nmod|obl,2=*,3=*, !4, !enhanced]-> D; D[Case=lex.case]}
+without{D[PronType=Rel|"Int,Rel"]}
+without{H -[enhanced=yes]-> D}
+commands{add_edge f: H -> D; f.enhanced=yes; f.1=e.1; f.2=e.2; f.3=e.3; f.4=lex.labl}
+
+rule case_add3_enhanced(lex from "cases.lp")
+pattern{e: H -[1=nmod|obl, 2=*,3=*, !4,enhanced=yes]-> D; D[Case=lex.case]}
+without{e.3=lex.labl}
+commands{e.4=lex.labl}

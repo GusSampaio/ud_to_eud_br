@@ -1,0 +1,3 @@
+pattern{H -[1=case|mark]-> D; D[ExtForm]}
+without{H -[1=case|mark]-> D1; D1 << D}
+without{H[Mark]}

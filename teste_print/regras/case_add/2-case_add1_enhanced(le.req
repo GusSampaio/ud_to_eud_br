@@ -1,0 +1,2 @@
+pattern{e: H -[1=nmod|obl,!2,enhanced=yes]-> D; D[Case=lex.case]}
+

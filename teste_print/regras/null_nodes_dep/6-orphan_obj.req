@@ -1,0 +1,7 @@
+pattern{
+  CONJ1 -[1=conj]-> CONJ2; CONJ1 -[obj]-> *;
+  CONJ2[DVerbForm,wordform="__EMPTY__"];
+  CONJ2 -[1=nsubj]-> HEAD;
+  e: HEAD -[orphan]-> OBJ; OBJ[Dupos=NOUN|NUM|PRON|PROPN|X]}
+without{OBJ -[1=case]-> *}
+without{CONJ2 -> OBJ}

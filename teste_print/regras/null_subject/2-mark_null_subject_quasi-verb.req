@@ -1,0 +1,2 @@
+pattern{V[VerbType=Quasi, !NullSubject]}
+without{ V -[1=csubj|nsubj]-> *}

@@ -1,0 +1,7 @@
+pattern{
+CONJ1 -[1=conj]-> CONJ2;
+H -[1 = acl|advcl|nmod|obl]-> CONJ1; CONJ1[Mark];
+e: H -[1 = acl|advcl|nmod|obl, !2]-> CONJ2}
+without{CONJ2 -[E:ref]-> PRO; H -> PRO}% The relation e is not a relation targeting a relative pronoun, which has moved to the antecedent.
+without{CONJ2[Mark]}
+without{CONJ1 -[enhanced=yes]-> CONJ2}

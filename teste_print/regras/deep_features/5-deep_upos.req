@@ -1,0 +1,4 @@
+pattern{X[upos]}
+without{X[ExtPos, PhraseType=Idiom]} % Idiom heads are excluded
+without{X[ExtPos, !PhraseType]} % Words with converted POS are excluded
+without{X[Dupos]}

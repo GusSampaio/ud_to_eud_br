@@ -1,0 +1,5 @@
+pattern{
+e: H -[1 = acl|advcl|nmod|obl, 2=*, !3, enhanced=yes]-> D; H -> PRO;
+D -[E:ref]-> PRO; PRO[Mark]}
+without{e.1=obl;e.2=agent}% Done in most treebanks but questionable
+without{e.2 = PRO.Mark}

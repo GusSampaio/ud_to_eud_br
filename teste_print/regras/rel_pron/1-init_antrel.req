@@ -1,0 +1,6 @@
+pattern{ H -[!enhanced]-> PRO; PRO [Dupos=ADV|DET|PRON,PronType=Rel|"Int,Rel"]}
+without{* -[E:ref]-> PRO}
+without{PRO[ErrorPronType=Yes]}
+without{H -[acl:relcl|advcl:cleft|conj|root]-> PRO}
+without{H -[1=conj]-> PRO}
+without{H -[ANTREL]->PRO}

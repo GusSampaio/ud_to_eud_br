@@ -1,0 +1,5 @@
+pattern{
+  e:H -[ANTREL]-> PRO;
+  H1 -[1=conj]-> H}
+without{ H2 -[1=acl|amod|advmod|nmod]->H1}
+without{PRO[ErrorPronType]}

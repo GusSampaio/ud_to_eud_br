@@ -1,0 +1,6 @@
+pattern{
+  e:CONJ1 -[conj]-> OBL2;
+  CONJ1[DVerbForm];
+  OBL2 -[case]-> *;
+  OBL2 -[orphan]-> *}
+without{* -[^conj]-> OBL2}

@@ -1,0 +1,7 @@
+pattern{
+  CONJ1 -[1=conj]-> CONJ2;
+  e:CONJ1 -[1<> aux|conj|cop|punct]-> D;
+  CONJ2 << D}
+without{CONJ1 -[1=nsubj,enhanced=yes]-> D; CONJ2[Dupos=NOUN]}
+without{CONJ1 -[1=parataxis]-> D}
+without{ CONJ2 -> D}

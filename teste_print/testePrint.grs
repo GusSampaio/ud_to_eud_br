@@ -1,0 +1,19 @@
+package meu_pac{
+  rule xcomp_without_obj{
+      pattern{GOV -[xcomp]-> DEP}
+      pattern{e:SUBJ_GOV -[root]-> GOV}
+      commands{add_edge f:DEP -> SUBJ_GOV; f.label = e.label; f.enhanced=yes}
+  }
+
+  rule nova_regra{
+      pattern{GOV -[xcomp]-> DEP}
+      pattern{e:SUBJ_GOV -[root]-> GOV}
+      commands{add_edge f:DEP -> SUBJ_GOV; f.label = VERB; f.enhanced=yes}
+  }
+}
+
+strat ud_to_mix{
+  Seq(
+    Onf(meu_pac)
+  )
+}

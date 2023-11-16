@@ -1,0 +1,3 @@
+pattern{H -[1=cc]-> D; D[ExtForm]}
+without{H -[1=cc]-> D1; D1 << D}
+without{H[Markcc]}

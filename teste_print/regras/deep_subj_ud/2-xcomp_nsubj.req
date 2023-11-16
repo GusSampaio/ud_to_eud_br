@@ -1,0 +1,11 @@
+pattern{
+PRED -[1=xcomp]-> DPRED;
+%DPRED[upos=ADJ|ADV|VERB];
+e:PRED -[1=csubj|nsubj]-> SUBJ}
+without{ * -[E:ref]-> SUBJ}% When a relative pronoun is subject, its antecedent is assigned the function of enhanced subject
+without{DPRED[DVerbForm=Part, DTense=Past]}
+without{DPRED -[aux:pass]-> *}
+without{ DPRED -[1=expl,2=pass]-> PRO} % DPRED is not in the mediopassive voice.
+without{PRED -[obj]-> *}
+without{DPRED[NullSubject=Yes]}
+without{DPRED -[1=csubj|nsubj]-> *}

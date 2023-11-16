@@ -1,0 +1,2 @@
+pattern{e:MWE -[MWE]-> D}
+without{ MWE -[fixed|goeswith]-> D1; D << D1}

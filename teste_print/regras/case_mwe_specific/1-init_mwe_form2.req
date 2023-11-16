@@ -1,0 +1,7 @@
+pattern{
+H -[1=case|cc|mark]-> MWE;
+MWE -[fixed|goeswith]-> D;
+MWE[form=lex.form1]; D[form=lex.form2]}
+without{ H -[1=case|cc|mark]-> MWE1; MWE1 << MWE}
+without{ MWE -[fixed]-> D1}
+without{MWE[ExtForm]}

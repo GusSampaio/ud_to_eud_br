@@ -1,0 +1,6 @@
+pattern{
+  CONJ2[wordform="__EMPTY__"];
+  CONJ2 -[1=acl|amod|nmod]-> HEAD;
+  e: HEAD -[orphan]-> N; N[Dupos=NOUN|NUM|PRON|PROPN|X]}
+without{ N -[punct]-> P1; N -[punct]-> P2; P1 << N; N << P2}
+without{CONJ2 -> N}

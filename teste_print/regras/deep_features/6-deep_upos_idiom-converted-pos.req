@@ -1,0 +1,3 @@
+pattern{X[ExtPos]}
+without{X[ExtPos, PhraseType=Title]} % Title heads are excluded
+without{X[Dupos]}

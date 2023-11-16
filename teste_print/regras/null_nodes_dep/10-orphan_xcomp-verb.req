@@ -1,0 +1,5 @@
+pattern{
+  CONJ2[DVerbForm,wordform=""];
+  CONJ2 -[1=csubj|nsubj|obj]-> HEAD;
+  e: HEAD -[orphan]-> PRED; PRED[DVerbForm=Ger|Inf|Part]}
+without{CONJ2 -> PRED}

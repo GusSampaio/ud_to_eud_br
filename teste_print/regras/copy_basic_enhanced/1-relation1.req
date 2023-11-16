@@ -1,0 +1,4 @@
+pattern{e: H -[!2]-> D}
+without{D[PronType=Rel|"Int,Rel"]}
+without{e.1 = orphan}
+without{H -[enhanced=yes]-> D}

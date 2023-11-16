@@ -1,0 +1,5 @@
+pattern{H -[1=cc]-> D; D[lemma <> "&"|"e/o"|"en/of"|"t/m"]} % "e/o" is a cooordinating conjunction in Italian, and "en/of", "t/m" in Dutch.
+without{H -[1=cc]-> D1; D1 << D}
+without{H[Markcc]}
+without{D[upos=PUNCT|SYM|X]}
+without{D[ExtForm]}

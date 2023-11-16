@@ -1,0 +1,4 @@
+pattern{CONJ1 -[1=conj]-> CONJ2;CONJ1 -[cop]-> D; D[VerbForm]; D << CONJ1}
+without{ CONJ2 -[cop|E:cop]-> *}
+without{CONJ2[DVerbForm=Fin|Inf]}
+without{CONJ2 -[1=aux|cop]-> *}

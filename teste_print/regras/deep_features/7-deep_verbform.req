@@ -1,0 +1,3 @@
+pattern{V[VerbForm <> Vnoun]}
+without{V -[1=aux]-> AUX; AUX[VerbForm]}
+without{V[DVerbForm]}

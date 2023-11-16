@@ -1,0 +1,9 @@
+pattern{H -[1=case|mark]-> D; D[Dupos <> PUNCT]}
+without{H -[1=case|mark]-> D1; D1 << D}
+without{H1 -[1=conj]-> H; H1 -[1=mark]-> *}
+without{H[Mark]}
+without{D[upos=SYM]}
+without{D[lemma="'"|"'s"|"’s"]} % Possession mark in English
+without{D[lemma="°"]} % Specific symbols
+without{D[ExtForm]}
+

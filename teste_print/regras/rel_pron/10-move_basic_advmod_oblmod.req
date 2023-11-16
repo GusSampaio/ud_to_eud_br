@@ -1,0 +1,2 @@
+pattern{ANT -[E:ref]-> PRO; e: H-[advmod]-> PRO;H[Dupos=ADJ|VERB]}
+without{ H -> ANT}

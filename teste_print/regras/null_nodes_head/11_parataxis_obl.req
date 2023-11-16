@@ -1,0 +1,5 @@
+pattern{
+  e:V1 -[1=parataxis]-> D; V1[DVerbForm];
+  D -[orphan]-> *; D -[case]-> *;
+  e1:D -[punct]-> P; P[Dupos=PUNCT,lemma = ":"]}
+without{* -[1 <> parataxis]-> D}

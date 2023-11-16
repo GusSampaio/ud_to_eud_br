@@ -1,0 +1,5 @@
+pattern{e: H -[1=nmod|obl,!2,!enhanced]-> D; D[Case=lex.case]}
+without{H -[enhanced=yes]-> D}
+without{D[PronType=Rel|"Int,Rel"]}
+without{H -[1=acl|advcl|nmod|obl, enhanced=yes]-> D}
+

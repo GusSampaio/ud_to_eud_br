@@ -1,0 +1,7 @@
+pattern{
+CONJ1 -[conj]-> CONJ2;
+CONJ1 -[1=conj]-> CONJ3; CONJ2 << CONJ3; CONJ3 -[cc]-> C; C[lemma]}
+without{CONJ2 -[cc]-> *}
+without{C[lemma = "&"|"e/o"|"en/of"|"t/m"]} % "e/o" is a cooordinating conjunction in Italian, and "en/of", "t/m" in Dutch.
+without{CONJ1 -[conj]-> CONJ4; CONJ2 << CONJ4; CONJ4 << CONJ3; CONJ4 -[cc]-> *}
+without{CONJ1 -[enhanced=yes]-> CONJ2}

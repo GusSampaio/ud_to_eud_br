@@ -1,0 +1,7 @@
+pattern{
+CONJ1 -[1=conj]-> CONJ2;
+e:H -[1 <> acl|advcl|advmod|amod|nmod|nummod|obl|conj|punct|root]-> CONJ1 % Modifiers has a specific treatment.
+}
+without{H[Dupos=ADJ]; H -[E:nsubj]-> CONJ1; H << CONJ1}% H is an adjective that is left attributive of CONJ1, but not of the coordination.
+without{ CONJ1 << H; H << CONJ2}
+without{H -> CONJ2}

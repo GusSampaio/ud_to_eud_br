@@ -1,0 +1,6 @@
+pattern{CONJ2 -[1=cc]-> D; CONJ2[Markcc]; e2: CONJ1 -[1=conj]-> CONJ2}
+%without{D[ExtForm]}
+without{D[Dupos=SYM]}
+without{CONJ2 -[1=cc]-> D1; D1 << D}% Ex: They can freely write anything they like about our prophet, but[D1] if one raises doubts about the Holocaust he is either[D] fined[CONJ2] or sent to prison," he added.
+without{e2.2 = CONJ2.Markcc}
+without{CONJ1 -[enhanced=yes]-> CONJ2}

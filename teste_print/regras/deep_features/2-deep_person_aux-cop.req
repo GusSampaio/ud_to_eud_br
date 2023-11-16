@@ -1,0 +1,3 @@
+pattern{AUX[Person]; V -[1=aux|cop]-> AUX}
+without{V -[1=aux]-> AUX1; AUX1 << AUX} % The leftmost auxiliary determines the Tense feaure
+without{V[DPerson]}

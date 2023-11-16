@@ -1,0 +1,4 @@
+pattern{
+e: H -[1 = acl|advcl|nmod|obl, !2, enhanced=yes]-> D;
+H -> PRO;
+D -[E:ref]-> PRO; PRO[Mark]}

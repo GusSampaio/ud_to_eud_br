@@ -1,0 +1,5 @@
+pattern{
+H -[ANTREL]-> D;
+e: H -[1 = acl|advcl|nmod|obl, !2, enhanced =yes]-> D;
+D -[E:ref]-> PRO; PRO[Mark]}
+without{H -[enhanced=yes]-> D}

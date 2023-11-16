@@ -1,0 +1,6 @@
+pattern{
+  e:CONJ1 -[conj]-> N2;
+  CONJ1 -[1=acl|amod|nmod]-> MOD1; 
+  N2[Dupos=NOUN|NUM|PRON|PROPN|X];
+  N2 -[orphan]-> *}
+without{* -[^conj]-> N2}

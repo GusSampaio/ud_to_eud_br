@@ -1,0 +1,4 @@
+pattern{
+  H -[orphan]-> D;
+  NULL[wordform="__EMPTY__"]; NULL -> H}
+without{NULL -> D}

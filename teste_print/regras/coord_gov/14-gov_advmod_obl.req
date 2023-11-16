@@ -1,0 +1,9 @@
+pattern{
+CONJ1 -[1=conj]-> CONJ2;
+H -[1=advmod]-> CONJ1;
+CONJ2[Dupos=ADJ|NOUN|NUM|PRON|PROPN|X]}
+without{H[Dupos=NOUN|NUM|PRON|PROPN|X]}
+without{CONJ2 -[mark]-> *}
+without{CONJ2[DVerbForm]}
+without{ CONJ1 << H; H << CONJ2}
+without{H -> CONJ2}

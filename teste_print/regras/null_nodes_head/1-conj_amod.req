@@ -1,0 +1,7 @@
+pattern{
+  e:CONJ1 -[conj]-> ADJ2;
+  CONJ1 -[1=acl|amod|nmod]-> MOD1; 
+  ADJ2[Dupos=ADJ];
+  ADJ2 -[orphan]-> *}
+without{ADJ2 -[case]-> *}
+without{* -[^conj]-> ADJ2}

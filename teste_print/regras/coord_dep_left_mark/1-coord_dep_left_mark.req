@@ -1,0 +1,5 @@
+pattern{
+  CONJ1 -[1=conj]-> CONJ2;
+  e:CONJ1 -[mark]-> D; D << CONJ1;
+  CONJ2[DVerbForm]}
+without{ CONJ2 -[mark|E:mark]-> *}

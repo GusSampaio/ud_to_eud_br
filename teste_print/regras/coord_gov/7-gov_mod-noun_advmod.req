@@ -1,0 +1,10 @@
+pattern{
+CONJ1 -[1=conj]-> CONJ2;
+H -[1=acl|advmod|amod|nmod|nummod]-> CONJ1;
+CONJ2[Dupos=ADV]}
+without{H[upos <> NOUN|NUM|PRON|PROPN|X]; H -[advmod]-> CONJ1}% ADVMOD does not always have a nominal governor.
+without{H -[acl:relcl]-> CONJ1}
+without{H -[1=acl]-> CONJ1; CONJ1[DVerbForm=Fin]}
+without{CONJ2[DVerbForm=Fin]}
+without{ CONJ1 << H; H << CONJ2}
+without{H -> CONJ2}

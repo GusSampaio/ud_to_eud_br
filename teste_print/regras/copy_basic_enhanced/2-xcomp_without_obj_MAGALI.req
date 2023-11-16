@@ -1,0 +1,3 @@
+pattern{GOV -[xcomp]-> DEP}
+pattern{e:SUBJ_GOV -[nsubj]-> GOV}
+without{GOV -[obj]-> DEP2}

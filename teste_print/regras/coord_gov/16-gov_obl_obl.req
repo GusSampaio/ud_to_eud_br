@@ -1,0 +1,8 @@
+pattern{
+CONJ1 -[1=conj]-> CONJ2;
+e:H -[1=obl]-> CONJ1;
+CONJ2[Dupos <> ADV]}
+without{CONJ2 -[mark]-> *}
+without{CONJ2[DVerbForm <> Conv|Part]}
+without{ CONJ1 << H; H << CONJ2}
+without{H -> CONJ2}

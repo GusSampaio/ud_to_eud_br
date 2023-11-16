@@ -1,0 +1,7 @@
+pattern{
+e:H -[MARK]-> D;
+H -[1=case|mark]-> D1; D < D1}
+without{D1[ExtForm]}
+without{D1[upos=SYM]}
+without{D1[lemma="'"|"'s"|"’s"]} % Possession mark in English
+without{D[lemma="°"]} % Specific symbols

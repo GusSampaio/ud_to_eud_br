@@ -1,0 +1,7 @@
+pattern{
+CONJ1 -[1=conj]-> CONJ2;
+H -[advcl|advcl:x|advmod|obl|obl:mod]-> CONJ1;
+CONJ2[Dupos=ADV]}
+without{H -[advmod]-> CONJ1; H[Dupos=NOUN|NUM|PRON|PROPN|X]}% ADVMOD does not always have a predicative governor.
+without{H -> CONJ2}
+without{ CONJ1 << H; H << CONJ2}

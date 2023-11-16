@@ -1,0 +1,7 @@
+pattern{e: H -[1 = acl|advcl|nmod|obl, 2=*,!3]-> D; D[Mark]}
+without{D -[E:ref]-> PRO; H -> PRO}% The relation e is not a relation targeting a relative pronoun, which has moved to the antecedent.
+without{e.2 = D.Mark}
+without{e.1=obl;e.2=agent}% Done in most treebanks but questionable
+without{e.1=acl; e.2=relcl}
+without{ H -[enhanced=yes]-> D}
+without{* -[E:ref]-> D}

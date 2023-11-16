@@ -1,0 +1,3 @@
+pattern{V[upos=VERB,Person]}
+without{V -[1=aux|cop]-> AUX}
+without{V[DPerson]}

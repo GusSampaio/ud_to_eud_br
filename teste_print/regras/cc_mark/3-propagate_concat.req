@@ -1,0 +1,5 @@
+pattern{
+e:H -[MARK]-> D; H[Markcc];
+H -[1=cc]-> D1; D < D1}
+without{D1[ExtForm]}
+without{D1[upos=SYM|X]}

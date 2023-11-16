@@ -1,0 +1,11 @@
+# global.columns = ID FORM LEMMA UPOS XPOS FEATS HEAD DEPREL DEPS MISC
+# sent_id = FOLHA_DOC000012_SENT015
+# text = Podíamos ver o céu ficando vermelho.
+1	Podíamos	poder	VERB	_	Mood=Ind|Number=Plur|Person=1|Tense=Imp|VerbForm=Fin	0	root	_	_
+2	ver	ver	VERB	_	VerbForm=Inf	1	xcomp	_	_
+3	o	o	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	4	det	_	_
+4	céu	céu	NOUN	_	Gender=Masc|Number=Sing	2	obj	_	_
+5	ficando	ficar	VERB	_	VerbForm=Ger	2	xcomp	_	_
+6	vermelho	vermelho	ADJ	_	Gender=Masc|Number=Sing	5	xcomp	_	SpaceAfter=No
+7	.	.	PUNCT	_	_	1	punct	_	SpaceAfter=No
+

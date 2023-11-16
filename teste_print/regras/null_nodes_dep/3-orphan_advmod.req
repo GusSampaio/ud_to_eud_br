@@ -1,0 +1,5 @@
+pattern{
+  CONJ2[wordform="__EMPTY__"];
+  CONJ2 -[1=nsubj|obj|obl|xcomp]-> HEAD;
+  e: HEAD -[orphan]-> ADV; ADV[Dupos=ADV]}
+without{CONJ2 -> ADV}

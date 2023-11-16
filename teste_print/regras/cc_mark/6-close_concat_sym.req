@@ -1,0 +1,1 @@
+pattern{e:H -[MARK]-> D; H -[1=cc]-> D1; D < D1; D1[upos=SYM|X]}

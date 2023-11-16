@@ -1,0 +1,2 @@
+pattern{e:H -[MARK]-> D}
+without{ H -[1=cc]-> D1; D < D1 }
