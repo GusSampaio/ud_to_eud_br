@@ -1,3 +1,1 @@
 pattern { e: M -[^root]-> N; M[form = "__0__"] }
-
-pattern { e: M -[^root]-> N; M[form = "__0__"] }
