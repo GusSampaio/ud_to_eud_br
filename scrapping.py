@@ -4,6 +4,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import os
 from time import sleep
+import csv
 
 driver = webdriver.Firefox()
 
@@ -32,11 +33,16 @@ input_regras = driver.find_element(By.ID, 'grs_file_input').send_keys(os.getcwd(
 changed_sentences = WebDriverWait(driver, 10).until(
     EC.presence_of_all_elements_located((By.XPATH, '//ul[@class="nav flex-column"]//li'))
 )
-num_items = len(changed_sentences)
-#print(f"A lista contem {num_items} sentencas.")
+num_sentences = len(changed_sentences)
+#print(f"A lista contem {num_sentences} sentencas.")
+
+#Criando arquivo csv para análise futura
+with open('aplicacoes.csv', 'w', newline='') as arquivo:
+    writer = csv.writer(arquivo)
+    writer.writerow(['pacote', 'regra'])
 
 strategie_name = 'ud_to_mix'
-if num_items == 1:     
+if num_sentences == 1:     
     #Aplicação das regras
     strategies_btn = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.ID, 'strat-'+strategie_name))
@@ -48,39 +54,46 @@ if num_items == 1:
     id_name = full_text.split(':')[1].strip()
     print(f"O nome do ID eh '{id_name}'")
 else:
-    #for i in range(num_items):
-    changed_sentences[0].click()
-    
-    #Aplicação das regras
-    strategies_btn = WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.ID, 'strat-'+strategie_name))
-    )
-    strategies_btn.click()
-
-    see_rules_btn = WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.CLASS_NAME,'btn.btn-success.btn-lg'))
-    )
-    see_rules_btn.click()
-
-
-    ## Nao ta funcionando isso ainda
-    applied_rules = WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.XPATH, '//div[@class="sidebar-sticky.pt-3"]/h3'))
-    )
-    applied_rules = applied_rules.text
-    print(applied_rules)
-
-    '''
-    for i in range(len(applied_rules)-1):
-        applied_rules_btn = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, "//a[@id='R_"+str(i)+"']"))
+    for i in range(num_sentences):
+        changed_sentences[i].click()
+        
+        #Aplicação das regras
+        strategies_btn = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, 'strat-'+strategie_name))
         )
-        rule = applied_rules_btn.text
-        print(rule)
-    '''
-    
+        strategies_btn.click()
 
+        see_rules_btn = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.CLASS_NAME,'btn.btn-success.btn-lg'))
+        )
+        see_rules_btn.click()
 
+        applied_rules = WebDriverWait(driver, 10).until(
+            EC.presence_of_all_elements_located((By.XPATH, "//a[starts-with(@id, 'R_')]"))
+        )
+
+        num_items = len(applied_rules)
+        #print(num_items)
+
+        with open('aplicacoes.csv', 'a', newline='') as arquivo:
+            writer = csv.writer(arquivo)
+            for i in range(len(applied_rules)):
+                applied_rules_btn = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located((By.XPATH, "//a[@id='R_"+str(i)+"']"))
+                )
+                rule = applied_rules_btn.text
+                rule = rule.split(' ')[2]
+                rule = rule.split('.')
+                writer.writerow(rule)
+        
+        sleep(1)
+
+        #Ve a proxima sentenca
+        corpus_btn = WebDriverWait(driver, 3).until(
+            EC.presence_of_element_located((By.XPATH, "//button[@class='btn btn-sm btn-secondary' and text()='Corpus']"))
+        )
+        driver.execute_script("arguments[0].style.display = 'block';", corpus_btn)
+        driver.execute_script("arguments[0].click();", corpus_btn)
 
 #finally:
 # Certifique-se de fechar o navegador após o uso.
