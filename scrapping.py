@@ -10,7 +10,7 @@ def cria_csv():
     #Criando arquivo csv para análise futura
     with open('aplicacoes.csv', 'w', newline='') as arquivo:
         writer = csv.writer(arquivo)
-        writer.writerow(['pacote', 'regra'])
+        writer.writerow(['id_sentenca','pacote', 'regra'])
 
 def info_das_regras(num_items, driver, id_name):
     with open('aplicacoes.csv', 'a', newline='') as arquivo:
@@ -46,7 +46,7 @@ def scrapp():
         input_corpus.send_keys(os.getcwd()+"\Pre_Anotacao_Enhanced.conllu")
 
         #Inserção das regras
-        input_regras = driver.find_element(By.ID, 'grs_file_input').send_keys(os.getcwd()+"\conjunto_regras_oficial.grs")
+        input_regras = driver.find_element(By.ID, 'grs_file_input').send_keys(os.getcwd()+"\este2.grs")
 
         #Observando quantas sentencas foram alteradas
         changed_sentences = WebDriverWait(driver, 10).until(
