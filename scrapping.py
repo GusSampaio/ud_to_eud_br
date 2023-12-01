@@ -23,7 +23,7 @@ try:
     sleep(3)
 
     #Inserção do corpus
-    input_corpus.send_keys(os.getcwd()+"\este_print\corpus_teste.conllu")
+    input_corpus.send_keys(os.getcwd()+"\Pre_Anotacao_Enhanced3.conllu")
 
     #Inserção das regras
     input_regras = driver.find_element(By.ID, 'grs_file_input').send_keys(os.getcwd()+"\este2.grs")
@@ -48,10 +48,9 @@ try:
         )
         strategies_btn.click()
 
-        #sentence_element = driver.find_element(By.XPATH, '//div[@class="col-md-9 ml-sm-auto col-lg-10 px-md-4"]/h3')
-        #full_text = sentence_element.text
-        #id_name = full_text.split(':')[1].strip()
-        #print(f"O nome do ID eh '{id_name}'")
+        sentence_element = driver.find_element(By.XPATH, '//div[@class="col-md-9 ml-sm-auto col-lg-10 px-md-4"]/h3')
+        full_text = sentence_element.text
+        id_name = full_text.split(':')[1].strip()
 
         see_rules_btn = WebDriverWait(driver, 10).until(
                 EC.presence_of_element_located((By.CLASS_NAME,'btn.btn-success.btn-lg'))
@@ -63,7 +62,6 @@ try:
         )
 
         num_items = len(applied_rules)
-        print(num_items)
 
         with open('aplicacoes.csv', 'a', newline='') as arquivo:
             for i in range(num_items):
@@ -74,8 +72,9 @@ try:
                 rule = applied_rules_btn.text
                 rule = rule.split(' ')[2]
                 rule = rule.split('.')
+                rule.insert(0, id_name)
                 writer.writerow(rule)
-        sleep(1)
+        sleep(0.5)
 
     else:
         for i in range(num_sentences):
@@ -91,6 +90,16 @@ try:
                 EC.presence_of_element_located((By.CLASS_NAME,'btn.btn-success.btn-lg'))
             )
             see_rules_btn.click()
+
+            sentences_elements = driver.find_elements(By.XPATH, '//div[@class="col-md-9 ml-sm-auto col-lg-10 px-md-4"]/h3')
+            sleep(0.5)
+            if i == 0:
+                full_text = sentences_elements[9].text
+            else:
+                full_text = sentences_elements[6].text
+
+            id_name = full_text.split(': ')[1]
+            #print(id_name)
 
             applied_rules = WebDriverWait(driver, 10).until(
                 EC.presence_of_all_elements_located((By.XPATH, "//a[starts-with(@id, 'R_')]"))
@@ -108,6 +117,7 @@ try:
                     rule = applied_rules_btn.text
                     rule = rule.split(' ')[2]
                     rule = rule.split('.')
+                    rule.insert(0, id_name)
                     writer.writerow(rule)
             
             sleep(1)
