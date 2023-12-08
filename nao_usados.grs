@@ -1,0 +1,358 @@
+% =============================================================================================
+% Fix invalid UDPIPE outputs
+package udpipe_fix {
+  rule r1 {
+    pattern { e: M -[^root]-> N; M[form = "__0__"] }
+    commands { del_edge e; add_edge M -[root]-> N }
+  }
+
+  rule r2 {
+    pattern { e: M -[root]-> N; M[form <> "__0__"] }
+    commands { del_edge e; add_edge M -[dep]-> N }
+  }
+}
+
+% =============================================================================================
+% Creation of all other deep subject dependencies that are not considered in EUD.
+package deep_subj_all{
+
+% If a present participle PART is an ACL dependent of N without any MARK relation, its deep subject is N.
+  rule acl_part-pres{
+    pattern{
+      PART[Dupos=VERB,DVerbForm=Conv|Part, DTense=Pres];
+      N -[1=acl]-> PART}
+    without{N -[acl:relcl|E:acl:relcl]-> PART}
+    without{PART -[mark]-> *}
+    without{PART[NullSubject=Yes]}
+    without{PART -[1=csubj|nsubj]-> *}
+    commands{add_edge PART -[E:nsubj]-> N}
+  }
+
+% If a past participle PART is an ACL dependent of N without any MARK relation, its deep passive subject is N.
+  rule acl_part-past{
+    pattern{
+      PART[Dupos=VERB,DVerbForm=Part, DTense=Past];
+      N -[1=acl]-> PART}
+    without{N -[acl:relcl|E:acl:relcl]-> PART}
+    without{PART[NullSubject=Yes]}
+    without{PART -[mark]-> *}
+    without{PART -[1=csubj|nsubj]-> *}
+    commands{add_edge PART -[1=nsubj,2=pass,enhanced=yes]-> N}
+  }
+
+% If an adjective ADJ is attributive of a noun N, its subject is N.
+  rule amod{
+    pattern{ADJ[Dupos=ADJ]; N -[1=amod]-> ADJ}
+    without{ADJ -[1=csubj|nsubj]-> *}
+    without{N[NullSubject=Yes]}
+    commands{add_edge ADJ -[E:nsubj]-> N}
+  }
+
+% If a predicate DPRED, which is not a finite verb, a past participe or a passive verb, is an ADVCL dependent of PRED, its deep subject is the subject SUBJ of PRED.
+%Ex: UD_French-GSD fr-ud-train_03936 - Très laide[DPRED], elle[SUBJ] provoquerait[PRED] l'effroi en la voyant.
+%Ex: UD_English-EWT email-enronsent23_14-0009  - plus we[SUBJ] can be outside[PRED] watching[DPRED] it.
+  rule advcl_nsubj{
+    pattern{
+      PRED -[advcl]-> DPRED; DPRED[Dupos=ADJ|VERB];
+      PRED -[1=nsubj]-> SUBJ}
+    without{DPRED[DVerbForm=Part, DTense=Past]}
+    without{PRED -[1=nsubj,2=pass]-> SUBJ; DPRED[DVerbForm=Inf]; DPRED -[1=mark]-> *}
+    without{DPRED[DVerbForm=Fin]}
+    without{DPRED[NullSubject=Yes]}
+    without{DPRED -[aux:pass]-> *}
+    without{DPRED -[1=nsubj]-> *}
+    without{DPRED -[expl:subj]-> *}
+    %without{DPRED -[mark]-> *} % This negative condition is excluded in French.
+    commands{add_edge DPRED -[E:nsubj]-> SUBJ}
+  }
+
+% If a passive verb DPRED is an ADVCL dependent of PRED, its deep passive subject is the subject SUBJ of PRED.
+%Ex:  UD_French-GSD fr-ud-train_00042 - Étant atteint[DPRED] du syndrome de Marfan, il est très grand[PRED] et mince.
+  rule advcl_nsubj_aux-pass{
+    pattern{
+      PRED -[advcl]-> DPRED;
+      PRED -[1=nsubj]-> SUBJ;
+      DPRED -[aux:pass]-> *}
+    without{DPRED[DVerbForm=Fin]}
+    without{DPRED[NullSubject=Yes]}
+    without{DPRED -[1=nsubj]-> *}
+    without{DPRED -[expl:subj]-> *}
+    commands{add_edge DPRED -[E:nsubj:pass]-> SUBJ}
+  }
+
+% If a past participle DPRED is an ADVCL dependent of PRED, its deep passive subject is the subject SUBJ of PRED.
+%Ex:  UD_French-GSD fr-ud-train_13855 - Créé[DPRED] en janvier 1932, il[SUBJ] fut dissous[PRED] en 1964.
+  rule advcl_nsubj_past-part{
+    pattern{
+      PRED -[advcl]-> DPRED;
+      PRED -[1=nsubj]-> SUBJ;
+      DPRED[DVerbForm=Part, DTense=Past]}
+    without{PRED -[mark]-> *}
+    without{DPRED[NullSubject=Yes]}
+    without{DPRED -[1=nsubj]-> *}
+    without{DPRED -[expl:subj]-> *}
+    commands{add_edge DPRED -[E:nsubj:pass]-> SUBJ}
+  }
+
+% if a predicate DPRED in the active voice is a XCOMP dependent of an adverb ADV, which is a modifier of another predicate PRED, its deep subject is the subject SUBJ of PRED.
+%Ex: UD_French-GSD fr-ud-test_00121 - Charles[NSUBJ] Mwando Nsimba a sollicité[PRED] un délai supplémentaire avant[ADV] de répondre[DPRED] aux préoccupations soulevées
+  rule xcomp_nsubj_advmod{
+    pattern{
+      PRED -[1=nsubj]-> SUBJ;
+      PRED -[advmod]-> ADV; ADV -[1=xcomp]-> DPRED}
+    without{DPRED -[1=csubj|nsubj]-> *}
+    without{DPRED -[aux:pass]-> *}
+    without{DPRED[NullSubject=Yes]}
+    without{DPRED[DVerbForm=Part, DTense=Past]}
+    commands{add_edge DPRED -[E:nsubj]-> SUBJ}
+  }
+
+% if a predicate DPRED in the passive voice is a XCOMP dependent of an adverb ADV, which is a modifier of another predicate PRED, its deep subject is the subject SUBJ of PRED.
+  rule xcomp_nsubj_advmod_aux-pass{
+    pattern{
+      PRED -[1=nsubj]-> SUBJ;
+      PRED -[advmod]-> ADV; ADV -[1=xcomp]-> DPRED;
+      DPRED -[aux:pass]-> *}
+    without{DPRED[NullSubject=Yes]}
+    without{DPRED -[1=csubj|nsubj]-> *}
+    commands{add_edge DPRED -[E:nsubj:pass]-> SUBJ}
+  }
+
+% if a past participle DPRED is a XCOMP dependent of an adverb ADV, which is a modifier or a predicate PRED, it is supposed to have a deep passive subject, which is the subject SUBJ of PRED.
+  rule xcomp_nsubj_advmod_past-part{
+    pattern{
+      PRED -[1=nsubj]-> SUBJ;
+      PRED -[advmod]-> ADV; ADV -[1=xcomp]-> DPRED;
+      DPRED[DVerbForm=Part, DTense=Past]}
+    without{DPRED[NullSubject=Yes]}
+    without{DPRED -[1=csubj|nsubj]-> *}
+    commands{add_edge DPRED -[E:nsubj:pass]-> SUBJ}
+  }
+
+}
+
+% =============================================================================================
+% Propagation of left-hand outgoing ADVMOD dependencies of a coordination to all conjuncts. 
+ rule coord_dep_left_advmod{
+   pattern{
+     CONJ1 -[1=conj]-> CONJ2;
+     e:CONJ1 -[1=advmod]-> D; 
+      D << CONJ1}
+    without{CONJ2 -> D}
+    commands{add_edge f:CONJ2 -> D; f.label = e.label; f.enhanced=yes}
+  }
+
+% =============================================================================================
+% Propagation of left-hand outgoing OBL dependencies of a coordination to all conjuncts. 
+ rule coord_dep_left_obl{
+   pattern{
+     CONJ1 -[1=conj]-> CONJ2;
+     e:CONJ1 -[1=obl]-> D; 
+      D << CONJ1}
+    without{CONJ2 -> D}
+    commands{add_edge f:CONJ2 -> D; f.label = e.label; f.enhanced=yes}
+  }
+
+% =============================================================================================
+% Propagation of left-hand outgoing subject dependencies of a coordination to all conjuncts.
+package coord_dep_left_subj{
+
+  % Active subject
+    rule left_dep_subj1{
+      pattern{
+        CONJ1 -[1=conj]-> CONJ2;
+        CONJ2[!NullSubject];
+        e:CONJ1 -[1=csubj|nsubj]-> D; D << CONJ1}
+      without{CONJ1 -[2=pass]-> D; CONJ2[Dupos=VERB,DVerbForm=Part,Tense=Past]}
+      without{CONJ2 -[aux:caus|aux:pass]-> *}
+      without{CONJ1.DPerson <> CONJ2.DPerson}
+      without{ * -[E:ref]-> D} % D is not a relative pronoun.
+      without{ CONJ2 -[expl:subj|E:expl:subj]-> SUBJ}
+      without{ CONJ2 -[1=csubj|nsubj]-> SUBJ; CONJ2 -[1=cc|punct]-> C; C << SUBJ}
+      without{CONJ2 -[1=cusbj|nsubj, !enhanced]-> *}
+      without{CONJ2 -[1=csubj|nsubj, enhanced=yes]-> D}
+      commands{ add_edge f: CONJ2 -> D; f.label=e.label;f.enhanced=yes}
+    }
+
+  % Active subject
+    rule left_dep_subj2{
+      pattern{
+        CONJ1 -[1=conj]-> CONJ2;
+        CONJ2[!NullSubject];
+        e:CONJ1 -[1=csubj|nsubj, 2=pass]-> D; D << CONJ1}
+      without{CONJ2[Dupos=VERB,DVerbForm=Part,Tense=Past]}
+      without{CONJ2 -[aux:caus|aux:pass]-> *}
+      without{CONJ1.DPerson <> CONJ2.DPerson}
+      without{ * -[E:ref]-> D} % D is not a relative pronoun.
+      without{ CONJ2 -[expl:subj|E:expl:subj]-> SUBJ}
+      without{ CONJ2 -[1=csubj|nsubj]-> SUBJ; CONJ2 -[1=cc|punct]-> C; C << SUBJ}
+      without{CONJ2 -[1=cusbj|nsubj, !enhanced]-> *}
+      without{CONJ2 -[1=csubj|nsubj, enhanced=yes]-> D}
+      commands{ add_edge f: CONJ2 -> D; f.1=e.1;f.enhanced=yes}
+    }
+
+  % Expletive subject
+    rule left_dep_expl-subj{
+      pattern{
+        CONJ1 -[1=conj]-> CONJ2;
+        CONJ2[!NullSubject];
+        e:CONJ1 -[expl:subj]-> D; D << CONJ1}
+      without{CONJ2 -[aux:caus|aux:pass]-> *}
+      without{CONJ2.DPerson <> 3}
+      without{CONJ2 -[case]-> *}
+      without{CONJ2 -[csubj|E:csubj|nsubj|E:nsubj|expl:subj|E:expl:subj]-> SUBJ}
+      without{CONJ2 -[E:expl:subj]-> D}
+      commands{ add_edge CONJ2 -[E:expl:subj]-> D}
+    }
+
+
+  % Passive subject. The second conjunct is marked as a passive verb with an auxiliary or a reflexive clitic pronoun.
+    rule left_dep_subj-pass1{
+      pattern{
+        CONJ1 -[1=conj]-> CONJ2;
+        CONJ2[!NullSubject];
+        e:CONJ1 -[1=csubj|nsubj]-> D; D << CONJ1;
+        CONJ2 -[aux:pass|E:aux:pass|dep:pass]-> *}
+      without{ CONJ2 -[expl:subj|E:expl:subj]-> SUBJ}
+      without{ CONJ2 -[1=csubj|nsubj]-> SUBJ; CONJ2 -[1=cc|punct]-> C; C << SUBJ}
+      without{ * -[E:ref]-> D} % D is not a relative pronoun.
+      without{CONJ2 -[1=nsubj, !enhanced]-> *}
+      without{CONJ2 -[1=nsubj, enhanced=yes]-> D}
+      commands{ add_edge f: CONJ2 -> D; f.1=e.1; f.2=pass; f.enhanced=yes}
+    }
+
+  % Passive subject. The second conjunct is a past participle, which is not marked as a passive verb.
+    rule left_dep_subj-pass2{
+      pattern{
+        CONJ1 -[1=conj]-> CONJ2;
+        CONJ2[!NullSubject];
+        e:CONJ1 -[1=csubj|nsubj, 2=pass]-> D; D << CONJ1;
+        CONJ2[Dupos=VERB,DVerbForm=Part,Tense=Past]}
+      without{ * -[E:ref]-> D} % D is not a relative pronoun.
+      without{CONJ2 -[1=csubj|nsubj, !enhanced]-> *}
+      without{CONJ2 -[1=csubj|nsubj, enhanced=yes]-> D}
+      commands{ add_edge f: CONJ2 -> D; f.1=e.1; f.2=pass; f.enhanced=yes}
+    }
+
+  % Causative subject
+    rule left_dep_subj-caus{
+      pattern{
+        CONJ1 -[1=conj]-> CONJ2;
+        CONJ2[!NullSubject];
+        e:CONJ1 -[1=csubj|nsubj]-> D; D << CONJ1;
+        CONJ2 -[aux:caus|E:aux:caus]-> *}
+      without{ CONJ2 -[expl:subj|E:expl:subj]-> SUBJ; CONJ2 -[1=cc|punct]-> C; C << SUBJ}
+      without{ CONJ2 -[1=csubj|nsubj]-> SUBJ; CONJ2 -[1=cc|punct]-> C; C << SUBJ}
+      without{ * -[E:ref]-> D} % D is not a relative pronoun.
+      without{CONJ2 -[1=csubj|nsubj, !enhanced]-> *}
+      without{CONJ2 -[1=csubj|nsubj, enhanced=yes]-> D}
+      commands{ add_edge f: CONJ2 -> D; f.1=e.1; f.2=caus; f.enhanced=yes}
+    } 
+}
+
+% =============================================================================================
+% Cleaning all provisional relations.
+package cleaning_rel{
+  rule amod_subj{
+    pattern{N -[1=amod]-> ADJ; e: ADJ -[E:nsubj]-> N}
+    commands{ del_edge e}
+  }
+}
+
+% =============================================================================================
+% Addition of an ExtForm feature for multi-word expressions, whose elements are not all written in lowercases.
+package case_mwe_specific{
+  % The  multi-word expression has two elements.
+  rule init_mwe_form2{
+    pattern{
+      H -[1=case|cc|mark]-> MWE;
+      MWE -[fixed|goeswith]-> D;
+      MWE[form=lex.form1]; D[form=lex.form2]}
+    without{ H -[1=case|cc|mark]-> MWE1; MWE1 << MWE}
+    without{ MWE -[fixed]-> D1}
+    without{MWE[ExtForm]}
+    commands{MWE.ExtForm=lex.extform}
+  }
+  %#BEGIN	lex
+  %form1	form2	extform
+  % Czech
+  %Ze	strany	ze_strany
+  %English
+  %b/c	of	because_of
+  %In	To	in_to
+  % Polish
+  %W	przypadku	w_przypadku
+  %W	sprawie	w_sparawie
+  %W	SPRAWACH	w_sprawach
+  %#END
+
+  % The  multi-word expression has three elements.
+  rule init_mwe_form3{
+    pattern{
+      H -[1=case|cc|mark]-> MWE;
+      MWE -[fixed|goeswith]-> D1; MWE -[fixed]-> D2; D1 << D2;
+      MWE[form=lex.form1]; D1[form=lex.form2]; D2[form=lex.form3] }
+    without{ H -[1=case|cc|mark]-> MWE1; MWE1 << MWE}
+    without{ MWE -[fixed]-> D3}
+    without{MWE[ExtForm]}
+    commands{MWE.ExtForm=lex.extform}
+  }
+  %#BEGIN	lex
+  %form1	form2	form3	extform
+  %English
+  %d	/	t	due_to
+  % Polish
+  %Bez	względu	na	bez_względu_na
+  %#END
+}
+
+% Addition of case information for non core arguments.
+package case_add{
+  rule case_add1_basic(lex from "lexicons/cases.lp"){
+    %pattern{e: H -[1=acl|advcl|nmod|obl,!2,!enhanced]-> D; D[Case=lex.case]}
+    pattern{e: H -[1=nmod|obl,!2,!enhanced]-> D; D[Case=lex.case]}
+    without{H -[enhanced=yes]-> D}
+    without{D[PronType=Rel|"Int,Rel"]}
+    without{H -[1=acl|advcl|nmod|obl, enhanced=yes]-> D}
+    commands{add_edge f: H -> D; f.enhanced=yes; f.1=e.1; f.2=lex.labl}
+  }
+  
+  rule case_add1_enhanced(lex from "lexicons/cases.lp"){
+    %pattern{e: H -[1=acl|advcl|nmod|obl,!2,enhanced=yes]-> D; D[Case=lex.case]}
+    pattern{e: H -[1=nmod|obl,!2,enhanced=yes]-> D; D[Case=lex.case]}
+    commands{e.2=lex.labl}
+  }
+
+  rule case_add2_basic(lex from "lexicons/cases.lp"){
+    %pattern{e: H -[1=acl|advcl|nmod|obl,2=*,!3, !enhanced]-> D; D[Case=lex.case]}
+    pattern{e: H -[1=nmod|obl,2=*,!3, !enhanced]-> D; D[Case=lex.case]}
+    without{D[PronType=Rel|"Int,Rel"]}
+    without{H -[acl:relcl]->D}
+    without{H -[enhanced=yes]-> D}
+    commands{add_edge f: H -> D; f.enhanced=yes; f.1=e.1; f.2=e.2; f.3=lex.labl}
+  }
+
+  rule case_add2_enhanced(lex from "lexicons/cases.lp"){
+    %pattern{e: H -[1=acl|advcl|nmod|obl, 2=*,!3,enhanced=yes]-> D; D[Case=lex.case]}
+    pattern{e: H -[1=nmod|obl, 2=*,!3,enhanced=yes]-> D; D[Case=lex.case]}
+    without{e.2=lex.labl}
+    without{H -[E:acl:relcl]->D}
+    commands{e.3=lex.labl}
+  }
+
+  rule case_add3_basic(lex from "lexicons/cases.lp"){
+    %pattern{e: H -[1=acl|advcl|nmod|obl,2=*,3=*, !4, !enhanced]-> D; D[Case=lex.case]}
+    pattern{e: H -[1=nmod|obl,2=*,3=*, !4, !enhanced]-> D; D[Case=lex.case]}
+    without{D[PronType=Rel|"Int,Rel"]}
+    without{H -[enhanced=yes]-> D}
+    commands{add_edge f: H -> D; f.enhanced=yes; f.1=e.1; f.2=e.2; f.3=e.3; f.4=lex.labl}
+  }
+
+  rule case_add3_enhanced(lex from "lexicons/cases.lp"){
+    %pattern{e: H -[1=acl|advcl|nmod|obl, 2=*,3=*, !4,enhanced=yes]-> D; D[Case=lex.case]}
+    pattern{e: H -[1=nmod|obl, 2=*,3=*, !4,enhanced=yes]-> D; D[Case=lex.case]}
+    without{e.3=lex.labl}
+    commands{e.4=lex.labl}
+  }
+
+}

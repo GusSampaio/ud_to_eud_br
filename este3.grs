@@ -1,3 +1,15 @@
+package root {
+  rule r1 {
+    pattern { e: M -[^root]-> N; M[form = "__0__"] }
+    commands { del_edge e; add_edge M -[root]-> N }
+  }
+
+  rule r2 {
+    pattern { e: M -[root]-> N; M[form <> "__0__"] }
+    commands { del_edge e; add_edge M -[dep]-> N }
+  }
+}
+
 % =============================================================================================
 % Addition of deep features to tokens
 package deep_features{
@@ -554,7 +566,6 @@ package rel_pron{
 
 }
 
-
 % =============================================================================================
 % Creation of deep subject relations allowed by the UD guidelines.
 package deep_subj_ud{
@@ -941,6 +952,23 @@ package coord_gov{
 }
 
 % =============================================================================================
+% For null subject languages, mark the verbs without explicit subject.
+package null_subject{
+  rule mark_null_subject{
+    pattern{V[DVerbForm=Fin, Person=1|2, !NullSubject]}
+    without{ V -[1=csubj|nsubj]-> *}
+    commands{V.NullSubject=Yes}
+  }
+  
+  rule mark_null_subject_quasi-verb{
+    pattern{V[VerbType=Quasi, !NullSubject]}
+    without{ V -[1=csubj|nsubj]-> *}
+    commands{V.NullSubject=Yes}
+  }
+
+}
+
+% =============================================================================================
 % Propagation of left-hand outgoing dependencies of a coordination to all conjuncts. There is an ambiguity because they can depend on the coordination or only on its left conjunct.
 package coord_dep_left_pck{
     rule coord_dep_left{
@@ -1001,7 +1029,7 @@ package coord_dep_left_pck{
       commands{ add_edge CONJ2 -[E:mark]-> D}
     }
 } 
- 
+
 package coord_dep_right_pck{
   % =============================================================================================
   % Right-hand outgoing dependents
@@ -1016,54 +1044,6 @@ package coord_dep_right_pck{
       without{ CONJ2 -> D}
       commands{add_edge f:CONJ2 -> D; f.label = e.label; f.enhanced=yes}
     }
-}
-
-
-% =============================================================================================
-% Addition of an ExtForm feature for multi-word expressions, whose elements are not all written in lowercases.
-package case_mwe_specific{
-  % The  multi-word expression has two elements.
-  rule init_mwe_form2{
-    pattern{
-      H -[1=case|cc|mark]-> MWE;
-      MWE -[fixed|goeswith]-> D;
-      MWE[form=lex.form1]; D[form=lex.form2]}
-    without{ H -[1=case|cc|mark]-> MWE1; MWE1 << MWE}
-    without{ MWE -[fixed]-> D1}
-    without{MWE[ExtForm]}
-    commands{MWE.ExtForm=lex.extform}
-  }
-  %#BEGIN	lex
-  %form1	form2	extform
-  % Czech
-  %Ze	strany	ze_strany
-  %English
-  %b/c	of	because_of
-  %In	To	in_to
-  % Polish
-  %W	przypadku	w_przypadku
-  %W	sprawie	w_sparawie
-  %W	SPRAWACH	w_sprawach
-  %#END
-
-  % The  multi-word expression has three elements.
-  rule init_mwe_form3{
-    pattern{
-      H -[1=case|cc|mark]-> MWE;
-      MWE -[fixed|goeswith]-> D1; MWE -[fixed]-> D2; D1 << D2;
-      MWE[form=lex.form1]; D1[form=lex.form2]; D2[form=lex.form3] }
-    without{ H -[1=case|cc|mark]-> MWE1; MWE1 << MWE}
-    without{ MWE -[fixed]-> D3}
-    without{MWE[ExtForm]}
-    commands{MWE.ExtForm=lex.extform}
-  }
-  %#BEGIN	lex
-  %form1	form2	form3	extform
-  %English
-  %d	/	t	due_to
-  % Polish
-  %Bez	względu	na	bez_względu_na
-  %#END
 }
 
 % =============================================================================================
@@ -1286,58 +1266,6 @@ package case_info{
 }
 
 % =============================================================================================
-% Addition of case information for non core arguments.
-package case_add{
-  rule case_add1_basic(lex from "lexicons/cases.lp"){
-    %pattern{e: H -[1=acl|advcl|nmod|obl,!2,!enhanced]-> D; D[Case=lex.case]}
-    pattern{e: H -[1=nmod|obl,!2,!enhanced]-> D; D[Case=lex.case]}
-    without{H -[enhanced=yes]-> D}
-    without{D[PronType=Rel|"Int,Rel"]}
-    without{H -[1=acl|advcl|nmod|obl, enhanced=yes]-> D}
-    commands{add_edge f: H -> D; f.enhanced=yes; f.1=e.1; f.2=lex.labl}
-  }
-  
-  rule case_add1_enhanced(lex from "lexicons/cases.lp"){
-    %pattern{e: H -[1=acl|advcl|nmod|obl,!2,enhanced=yes]-> D; D[Case=lex.case]}
-    pattern{e: H -[1=nmod|obl,!2,enhanced=yes]-> D; D[Case=lex.case]}
-    commands{e.2=lex.labl}
-  }
-
-  rule case_add2_basic(lex from "lexicons/cases.lp"){
-    %pattern{e: H -[1=acl|advcl|nmod|obl,2=*,!3, !enhanced]-> D; D[Case=lex.case]}
-    pattern{e: H -[1=nmod|obl,2=*,!3, !enhanced]-> D; D[Case=lex.case]}
-    without{D[PronType=Rel|"Int,Rel"]}
-    without{H -[acl:relcl]->D}
-    without{H -[enhanced=yes]-> D}
-    commands{add_edge f: H -> D; f.enhanced=yes; f.1=e.1; f.2=e.2; f.3=lex.labl}
-  }
-
-  rule case_add2_enhanced(lex from "lexicons/cases.lp"){
-    %pattern{e: H -[1=acl|advcl|nmod|obl, 2=*,!3,enhanced=yes]-> D; D[Case=lex.case]}
-    pattern{e: H -[1=nmod|obl, 2=*,!3,enhanced=yes]-> D; D[Case=lex.case]}
-    without{e.2=lex.labl}
-    without{H -[E:acl:relcl]->D}
-    commands{e.3=lex.labl}
-  }
-
-  rule case_add3_basic(lex from "lexicons/cases.lp"){
-    %pattern{e: H -[1=acl|advcl|nmod|obl,2=*,3=*, !4, !enhanced]-> D; D[Case=lex.case]}
-    pattern{e: H -[1=nmod|obl,2=*,3=*, !4, !enhanced]-> D; D[Case=lex.case]}
-    without{D[PronType=Rel|"Int,Rel"]}
-    without{H -[enhanced=yes]-> D}
-    commands{add_edge f: H -> D; f.enhanced=yes; f.1=e.1; f.2=e.2; f.3=e.3; f.4=lex.labl}
-  }
-
-  rule case_add3_enhanced(lex from "lexicons/cases.lp"){
-    %pattern{e: H -[1=acl|advcl|nmod|obl, 2=*,3=*, !4,enhanced=yes]-> D; D[Case=lex.case]}
-    pattern{e: H -[1=nmod|obl, 2=*,3=*, !4,enhanced=yes]-> D; D[Case=lex.case]}
-    without{e.3=lex.labl}
-    commands{e.4=lex.labl}
-  }
-
-}
-
-% =============================================================================================
 % Marking every governor of coordination conjunctions with a Mark feature. The value of this feature is the concatenation of forms of all coordination conjunctions that depend on this governor.
 package cc_mark{
   rule init_concat{
@@ -1526,44 +1454,29 @@ package cleaning_feat{
   }
 }
 
-package root {
-  rule r1 {
-    pattern { e: M -[^root]-> N; M[form = "__0__"] }
-    commands { del_edge e; add_edge M -[root]-> N }
-  }
-
-  rule r2 {
-    pattern { e: M -[root]-> N; M[form <> "__0__"] }
-    commands { del_edge e; add_edge M -[dep]-> N }
-  }
+strat meu_teste{
+    Seq(
+        Onf(root),
+        Onf(deep_features),
+        Onf(null_nodes_head),
+        Onf(null_nodes_dep),
+        Onf(orphan_default_pck),
+        Onf(rel_pron),
+        Onf(deep_subj_ud),
+        Onf(coord_gov),
+        Onf(null_subject),
+        Onf(coord_dep_left_pck),
+        Onf(coord_dep_right_pck),
+        Onf(deep_subj_ud),
+        Onf(rel_pron),
+        %Onf(case_mwe_specific),
+        Onf(case_mwe),
+        Onf(case_mark),
+        Onf(case_info),
+        %Onf(case_add),
+        Onf(cc_mark),
+        Onf(cc_info),
+        Onf(copy_basic_enhanced),
+        Onf(cleaning_feat)
+    )
 }
-
-% =============================================================================================
-% Applied Strategies
-strat ud_to_mix{
-  Seq(
-    Onf(root),
-    Onf(deep_features),
-    Onf(null_nodes_head),
-    Onf(null_nodes_dep),
-    Onf(orphan_default_pck),
-    Onf(rel_pron),
-    Onf(deep_subj_ud),
-    Onf(coord_gov),
-    Onf(null_subject),
-    Onf(coord_dep_left_pck),
-    Onf(coord_dep_right_pck),
-    Onf(deep_subj_ud),
-    Onf(rel_pron), % Ex: newsgroup-groups.google.com_alt.animals.cat_04d718686843b577_ENG_20040713_101600-0003 - 
-    Onf(case_mwe_specific),
-    Onf(case_mwe),
-    Onf(case_mark),
-    Onf(case_info),
-    Onf(case_add),
-    Onf(cc_mark),
-    Onf(cc_info),
-    Onf(copy_basic_enhanced),
-    Onf(cleaning_feat), % This package follows CLEANING_REL because CLEANING_REL uses deep feautres.
-  )
-}
-
