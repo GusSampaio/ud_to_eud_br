@@ -16,7 +16,7 @@ O objetivo principal desta aplicação é conseguir fazer com que sentenças esc
 O [Grew Web](https://web.grew.fr) é a própria ferramenta disponível para ser acessada e testada de maneira online.
 
 <p align="center">
-  <img src="./grew_web.jpg" alt="Tela inicial do grew web" width="738">
+  <img src="./imagens/grew_web.jpg" alt="Tela inicial do grew web" width="738">
 </p>
 
 Para demonstrar o funcionamento do Grew, estarei utilizando o arquivo de regras 'teste.grs' e o arquivo conllu 'sentencas_teste.conllu'.
@@ -28,7 +28,7 @@ Para demonstrar o funcionamento do Grew, estarei utilizando o arquivo de regras 
 - Escolha a estratégia requerida (neste caso, é a única que aparece: strat_teste).
 - Observe como cada regra foi aplicada ao grafo, podendo a mesma regra ter sido aplicada repetidas vezes dado o mesmo padrão encontrado.
 <p align="center">
-  <img src="./grew_web_pos_regras.png" alt="Tela inicial do grew web" width="738">
+  <img src="./imagens/grew_web_pos_regras.png" alt="Tela inicial do grew web" width="738">
 </p
   
 Nesta abordagem também é possível baixar o arquivo tranformado em formato .conllu e .json, os botões podem ser encontrados ao final da página.
