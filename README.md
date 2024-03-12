@@ -1,8 +1,16 @@
 # Tranformação de UD para EUD na língua portuguesa
-
+## Introdução
 A aplicação utiliza o [Grew](https://grew.fr), uma ferramenta de reescrita em grafos para aplicações que envolvem Processamento de Linguagem Natural (PLN).
 
 Esta ferramenta considera que cada sentença, que deve estar no formato .conllu, é uma árvore. Deste modo, a partir das regras inseridas (que devem estar no formato .grs), o programa analisa frase por frase, encontrando os padrões descritos nas regras e aplicando as mudanças relativas a aquele padrão.
+
+## Objetivo
+
+Universal Dependencies (UD) é um framework que possibilita a anotação consistente de gramática (partes da fala, características morfológicas e dependências sintáticas) em diferentes línguas humanas. UD é um esforço comunitário aberto com mais de 500 colaboradores produzindo mais de 200 bancos de árvores em mais de 100 línguas.
+
+A representação de UD foi sempre destinada a ser usada em tarefas superficiais de compreensão de linguagem natural, como extração de relações ou extração de eventos biomédicos. A UD é adequada para tais tarefas, pois as árvores UD contêm muitas dependências diretas entre palavras de conteúdo. No entanto, para algumas construções, o caminho de dependência entre duas palavras de conteúdo pode ser muito longo em uma árvore UD, o que complica a determinação de como as palavras de conteúdo estão relacionadas. Além disso, alguns tipos de dependência são usados para muitos tipos diferentes de argumentos e modificadores, e portanto, não são muito informativos por si só. Por essas razões, também há diretrizes para uma representação aprimorada (enhanced), que torna algumas das relações implícitas entre palavras mais explícitas, e aumenta alguns dos rótulos de dependência para facilitar a desambiguação de tipos de argumentos e modificadores.
+
+O objetivo principal desta aplicação é conseguir fazer com que sentenças escritas em língua portuguesa anotadas em UD, possam ser automaticamente re-anotadas para EUD (Enhanced Universal Dependencies). 
 
 ## Exemplo de uso do Grew Web num conjunto de regras genérico no Grew Web
 O [Grew Web](https://web.grew.fr) é a própria ferramenta disponível para ser acessada e testada de maneira online.
@@ -47,3 +55,6 @@ Neste projeto, o arquivo scrapping.py cria um 'bot' que segue as seguintes etapa
   -  Capta o pacote relacionado a regra aplicada
   -  Capta a regra aplicada
 - Escreve estes dados num .csv de saída (aplicacoes.csv)
+
+## Arquivo principal de anotação enhanced
+Em esforços conjuntos entre pesquisadores brasileiros da área, o programa atual está em fase *alpha*, isto é, ainda não apresenta assertividade total para os diversos casos em que EUD possa estar relacionado na língua portuguesa.
