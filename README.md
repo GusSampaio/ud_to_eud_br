@@ -58,3 +58,4 @@ Neste projeto, o arquivo scrapping.py cria um 'bot' que segue as seguintes etapa
 
 ## Arquivo principal de anotação enhanced
 Em esforços conjuntos entre pesquisadores brasileiros da área, o programa atual está em fase *alpha*, isto é, ainda não apresenta assertividade total para os diversos casos em que EUD possa estar relacionado na língua portuguesa.
+O arquivo é o **conjunto_de_regras_oficial.grs**.
