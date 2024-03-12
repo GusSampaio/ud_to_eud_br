@@ -1,0 +1,38 @@
+# sent_id = FOLHA_DOC000015_SENT022
+# text = Antes, porém, é preciso ter certeza que haverá estações de carregamento elétrico, e em quais estados.
+1	Antes	antes	ADV	_	_	6	advmod	_	SpaceAfter=No
+2	,	,	PUNCT	_	_	3	punct	_	_
+3	porém	porém	CCONJ	_	_	6	cc	_	SpaceAfter=No
+4	,	,	PUNCT	_	_	3	punct	_	_
+5	é	ser	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	6	cop	_	_
+6	preciso	preciso	ADJ	_	Gender=Masc|Number=Sing	0	root	_	_
+7	ter	ter	VERB	_	VerbForm=Inf	6	csubj	_	_
+8	certeza	certeza	NOUN	_	Gender=Fem|Number=Sing	7	obj	_	_
+9	que	que	SCONJ	_	_	10	mark	_	_
+10	haverá	haver	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Fut|VerbForm=Fin	8	acl	_	_
+11	estações	estação	NOUN	_	Gender=Fem|Number=Plur	10	obj	_	_
+12	de	de	ADP	_	_	13	case	_	_
+13	carregamento	carregamento	NOUN	_	Gender=Masc|Number=Sing	11	nmod	_	_
+14	elétrico	elétrico	ADJ	_	Gender=Masc|Number=Sing	13	amod	_	SpaceAfter=No
+15	,	,	PUNCT	_	_	19	punct	_	_
+16	e	e	CCONJ	_	_	19	cc	_	_
+17	em	em	ADP	_	_	19	case	_	_
+18	quais	qual	DET	_	Number=Plur|PronType=Int	19	det	_	_
+19	estados	estado	NOUN	_	Gender=Masc|Number=Plur	6	parataxis	_	SpaceAfter=No
+20	.	.	PUNCT	_	_	6	punct	_	SpaceAfter=No
+
+# sent_id = FOLHA_DOC000048_SENT015
+# text = Os partidos são entidades privadas e assim devem funcionar, disse.
+1	Os	o	DET	_	Definite=Def|Gender=Masc|Number=Plur|PronType=Art	2	det	_	_
+2	partidos	partido	NOUN	_	Gender=Masc|Number=Plur	4	nsubj	_	_
+3	são	ser	AUX	_	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	4	cop	_	_
+4	entidades	entidade	NOUN	_	Gender=Fem|Number=Plur	11	ccomp:speech	_	_
+5	privadas	privado	ADJ	_	Gender=Fem|Number=Plur|VerbForm=Part	4	amod	_	_
+6	e	e	CCONJ	_	_	8	cc	_	_
+7	assim	assim	ADV	_	_	8	advmod	_	_
+8	devem	dever	VERB	_	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	4	conj	_	_
+9	funcionar	funcionar	VERB	_	VerbForm=Inf	8	xcomp	_	SpaceAfter=No
+10	,	,	PUNCT	_	_	4	punct	_	_
+11	disse	dizer	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	SpaceAfter=No
+12	.	.	PUNCT	_	_	11	punct	_	SpaceAfter=No
+

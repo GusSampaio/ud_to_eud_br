@@ -12,8 +12,9 @@ def cria_csv():
         writer = csv.writer(arquivo)
         writer.writerow(['id_sentenca','pacote', 'regra'])
 
-def info_das_regras(num_items, driver, id_name):
-    with open('aplicacoes.csv', 'a', newline='') as arquivo:
+#Insercao das regras no csv
+def regras_no_csv(num_items, driver, id_name):
+    with open('aplicacoes_teste.csv', 'a', newline='') as arquivo:
         writer = csv.writer(arquivo)
         for i in range(num_items):
             applied_rules_btn = WebDriverWait(driver, 10).until(
@@ -46,7 +47,7 @@ def scrapp():
         input_corpus.send_keys(os.getcwd()+"\Pre_Anotacao_Enhanced.conllu")
 
         #Inserção das regras
-        input_regras = driver.find_element(By.ID, 'grs_file_input').send_keys(os.getcwd()+"\este2.grs")
+        input_regras = driver.find_element(By.ID, 'grs_file_input').send_keys(os.getcwd()+"\conjunto_regras_oficial.grs")
 
         #Observando quantas sentencas foram alteradas
         changed_sentences = WebDriverWait(driver, 10).until(
@@ -56,7 +57,7 @@ def scrapp():
         
         cria_csv()
 
-        strategie_name = 'ud_to_mix'
+        strategie_name = 'meu_teste'
         if num_sentences == 1:     
             #Aplicação das regras
             strategies_btn = WebDriverWait(driver, 10).until(
@@ -79,7 +80,7 @@ def scrapp():
 
             num_items = len(applied_rules)
 
-            info_das_regras(num_items, driver, id_name)
+            regras_no_csv(num_items, driver, id_name)
         else:
             for i in range(num_sentences):
                 changed_sentences[i].click()
@@ -112,7 +113,7 @@ def scrapp():
 
                 num_items = len(applied_rules)
 
-                info_das_regras(num_items, driver, id_name)
+                regras_no_csv(num_items, driver, id_name)
                 
                 sleep(1)
 
@@ -124,6 +125,8 @@ def scrapp():
                 driver.execute_script("arguments[0].click();", corpus_btn)
     finally:
         driver.close()
+        print("Codigo finalizado")
+
 
 if __name__ == '__main__':
     scrapp()

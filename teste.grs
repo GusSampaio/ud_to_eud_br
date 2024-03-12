@@ -1,0 +1,85 @@
+% =============================================================================================
+% Addition of deep features to tokens
+package deep_features{
+
+  % Deep PERSON for verbs without auxiliary and copula.
+    rule deep_person{
+      pattern{V[upos=VERB,Person]}
+      without{V -[1=aux|cop]-> AUX}
+      without{V[DPerson]}
+      commands{V.DPerson=V.Person}
+    }
+
+  % Deep TENSE for verbs with an auxiliary or a copula.
+    rule deep_person_aux-cop{
+      pattern{AUX[Person]; V -[1=aux|cop]-> AUX}
+      without{V -[1=aux]-> AUX1; AUX1 << AUX} % The leftmost auxiliary determines the Tense feaure
+      without{V[DPerson]}
+      commands{V.DPerson=AUX.Person}
+    }
+
+  % Deep TENSE for verbs without auxiliary.
+    rule deep_tense{
+      pattern{V[Tense]}
+      without{V -[1=aux]-> AUX}
+      without{V[DTense]}
+      commands{V.DTense=V.Tense}
+    }
+
+  % Deep TENSE for verbs with an auxiliary.
+    rule deep_tense_aux{
+      pattern{AUX[Tense]; V -[1=aux]-> AUX}
+      without{V -[1=aux]-> AUX1; AUX1 << AUX} % The leftmost auxiliary determines the Tense feaure.
+      without{V[DTense]}
+      commands{V.DTense=AUX.Tense}
+    }
+
+  % Deep UPOS for words that are not head of idioms or that have no converted POS.
+    rule deep_upos{
+      pattern{X[upos]}
+      without{X[ExtPos, PhraseType=Idiom]} % Idiom heads are excluded
+      without{X[ExtPos, !PhraseType]} % Words with converted POS are excluded
+      without{X[Dupos]}
+      commands{X.Dupos=X.upos}
+    }
+
+  % Deep UPOS for words that are head of idioms or have a converted POS.
+    rule deep_upos_idiom-converted-pos{
+      pattern{X[ExtPos]}
+      without{X[ExtPos, PhraseType=Title]} % Title heads are excluded
+      without{X[Dupos]}
+      commands{X.Dupos=X.ExtPos}
+    }
+
+  % Deep VERBFORM for verbs without auxiliary.
+    rule deep_verbform{
+      pattern{V[VerbForm <> Vnoun]}
+      without{V -[1=aux]-> AUX; AUX[VerbForm]}
+      without{V[DVerbForm]}
+      commands{V.DVerbForm=V.VerbForm}
+    }
+
+  % Deep VERBFORM for verbs with an auxiliary.
+    rule deep_verbform_aux{
+      pattern{AUX[VerbForm <> Vnoun]; V -[1=aux]-> AUX}
+      without{V -[1=aux]-> AUX1; AUX1 << AUX} % The leftmost auxiliary determines the VerbForm feaure.
+      without{V[DVerbForm]}
+      commands{V.DVerbForm=AUX.VerbForm}
+    }
+
+  % Deep VERBFORM for words with a copula.
+    rule deep_verbform_cop{
+      pattern{COP[DVerbForm]; PRED -[1=cop]-> COP; PRED[!DVerbForm]}
+      commands{PRED.DVerbForm = COP.DVerbForm}
+    }
+
+}
+
+% =============================================================================================
+% Applied Strategies
+strat strat_teste{
+  Seq(
+    Onf(deep_features),
+    )
+}
+
