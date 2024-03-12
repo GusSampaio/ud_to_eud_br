@@ -14,10 +14,10 @@ O [Grew Web](https://web.grew.fr) é a própria ferramenta disponível para ser 
 Para demonstrar o funcionamento do Grew, estarei utilizando o arquivo de regras 'teste.grs' e o arquivo conllu 'sentencas_teste.conllu'.
 
 ### Etapas para utilizar o Grew Web
-- Insira o arquivo de sentencas no campo 'Corpus'
-- Insira o arquivo de regras no campo 'GRS'
-- Clique em uma das duas sentencas que aparece no lado direito
-- Escolha a estratégia requerida (neste caso, é a única que aparece: strat_teste)
+- Insira o arquivo de sentencas no campo 'Corpus'.
+- Insira o arquivo de regras no campo 'GRS'.
+- Clique em uma das duas sentencas que aparece no lado direito.
+- Escolha a estratégia requerida (neste caso, é a única que aparece: strat_teste).
 - Observe como cada regra foi aplicada ao grafo, podendo a mesma regra ter sido aplicada repetidas vezes dado o mesmo padrão encontrado.
 <p align="center">
   <img src="./grew_web_pos_regras.png" alt="Tela inicial do grew web" width="738">
@@ -29,13 +29,21 @@ Nesta abordagem também é possível baixar o arquivo tranformado em formato .co
 O escritor deste tutorial tentou fazer a instalação citada abaixo num Windowns 11, porém sem sucesso. No entanto, o programa funcionou tanto em WSL quanto no Ubuntu, uma distribuição Linux bastante difundida.
 
 - Siga o processo de instalação descrito [aqui](https://grew.fr/usage/install/).
-- Digite o comando no terminal: eval $(opam env)
-- Vá para a pasta ./ud_to_eud
-- Digite o comando no terminal: grew transform -config iwpt -grs grs/iwpt_UD_to_MIX.grs -strat ud_to_mix -i ../sentencas_teste.conllu -o ../POS_ANOTACAO.conllu
+- Digite o comando no terminal: eval $(opam env).
+- Vá para a pasta ./ud_to_eud.
+- Digite o comando no terminal: grew transform -config iwpt -grs grs/iwpt_UD_to_MIX.grs -strat ud_to_mix -i ../sentencas_teste.conllu -o ../POS_ANOTACAO.conllu.
   - Este comando considera dois arquivos: um de regras (iwpt_UD_to_MIX.grs) e outro com as sentenças a serem transformadas (teste.conllu). A saída gerada é escrita no arquivo POS_ANOTACAO.conllu .  
   - Para entender completamente este e outros comandos possíveis acesse [aqui](https://grew.fr/usage/cli/).
 
 É válido notar que nesta abordagem *não* demonstra quais e quantas regras foram aplicadas para cada sentença. Para este objetivo siga o passo a passo no Grew Web.
 
 ## Scrapping para análise de uso das regras
-
+Web Scrapping é uma forma de mineração que permite a extração de dados de sites da web convertendo-os em informação estruturada para posterior análise.
+Neste projeto, o arquivo scrapping.py cria um 'bot' que segue as seguintes etapas:
+- Abre o [Grew Web](https://web.grew.fr) no navegador firefox.
+- Aplica um conjunto de regras e um corpus no site.
+- Para cada sentença analisada:
+  -  Capta o ID da sentença (presente no arquivo .conllu)
+  -  Capta o pacote relacionado a regra aplicada
+  -  Capta a regra aplicada
+- Escreve estes dados num .csv de saída (aplicacoes.csv)
