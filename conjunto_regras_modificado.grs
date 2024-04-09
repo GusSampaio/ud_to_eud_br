@@ -1400,17 +1400,18 @@ package copy_basic_enhanced{
     commands{add_edge f: H -> D;  f.enhanced = yes; f.1=e.1;f.2=e.2 }
   }
 
+  % ELVIS: Comentei essa regra, pois orphan é uma etiqueta que não deve existir como enhanced
   % An ORPHAN dependency is not taken into account in the creation of null nodes.
-  rule orphan{
-    pattern{H -[1=orphan,!enhanced]-> D}
-    without{
-      H1 -[1=conj|parataxis, !enhanced]-> H;
-      H1 -[1=conj|parataxis, enhanced=yes]-> NULL;
-      NULL[wordform= __EMPTY__];
-      NULL -> H}
-    without{H -[1=orphan,enhanced=yes]-> D}
-    commands{add_edge H -[1=orphan,enhanced=yes]-> D}
-  }
+  %rule orphan{
+  %  pattern{H -[1=orphan,!enhanced]-> D}
+  %  without{
+  %    H1 -[1=conj|parataxis, !enhanced]-> H;
+  %    H1 -[1=conj|parataxis, enhanced=yes]-> NULL;
+  %    NULL[wordform= __EMPTY__];
+  %    NULL -> H}
+  %  without{H -[1=orphan,enhanced=yes]-> D}
+  %  commands{add_edge H -[1=orphan,enhanced=yes]-> D}
+  %}
 }
 
 % =============================================================================================
@@ -1454,13 +1455,317 @@ package cleaning_feat{
   }
 }
 
-strat strat_principal{
-    Seq(
+package elvis_novas{
+  % ELVIS: Sergio Moro perguntou a Palocci se Kontic sabia das ilegalidades cometidas por ele.
+  % [ilegalidades], além de head do acl cujo dependente é [cometidas], é também dependente do nsubj cujo head é [cometidas]
+  rule propaga_nsubjpass_para_acl{
+    pattern{
+      HEADACL -[1=acl]-> DEPACL;
+      DEPACL [VerbForm=Part,Voice=Pass];
+    }
+    without {
+      DEPACL -[1=nsubj]-> *
+    }
+    commands{add_edge f: DEPACL -> HEADACL; f.label = "nsubj:pass"; f.enhanced=yes}
+  }
+}
+
+package elvis_limpezas{
+  rule limpa_conj_orphan{
+    pattern{
+      NOFORM [wordform="__EMPTY__"];
+      e: CONJ -[1=conj]-> NOFORM;
+      f: CONJ -[1=conj,enhanced=yes]-> HEADORPHAN;
+      HEADORPHAN -[1=orphan]-> ORPHAN;
+      NOFORM -> ORPHAN;
+    }
+    commands{e.label = f.label; del_edge f;}
+  }
+  rule limpa_cc_punct_orphan{
+    pattern{
+      NOFORM [wordform="__EMPTY__"];
+      NOFORM -[1=cc|punct]-> MOD;
+      f: OUTRO -[1=cc|punct,enhanced=yes]-> MOD;
+    }
+    commands{del_edge f;}
+  }
+
+  rule limpa_noform_movido{
+    pattern{NOFORM [noform_movido=yes]}
+    commands{del_feat NOFORM.noform_movido}
+  }
+  rule limpa_multiplos_orphans{
+    pattern{NOFORM [multiplos_orphans=yes]}
+    commands{del_feat NOFORM.multiplos_orphans}
+  }
+}
+
+package elvis_orphan{
+  rule corrige_punct_dependente_do_orphan{
+    pattern{
+      NOFORM [wordform="__EMPTY__"];
+      HEADORPHAN -[1=orphan]-> ORPHAN;
+      NOFORM -> HEADORPHAN;
+      ORPHAN -[1=punct]-> PUNCT;
+      PUNCT << ORPHAN;
+    }
+    without{NOFORM -[1=punct,enhanced=yes]-> PUNCT}
+    commands{add_edge f:NOFORM -> PUNCT; f.label = "punct"; f.enhanced = yes}
+  }
+
+  rule corrige_move_noform_orphan_antes_do_head{
+    pattern{
+      NOFORM [noform_movido=yes];
+      HEADORPHAN -[1=orphan]-> ORPHAN;
+      NOFORM -> HEADORPHAN;
+      HEADORPHAN -[1=nmod|amod|nummod|det|case|advmod|mark]-> MOD;
+      MOD < NOFORM;
+      HEADORPHAN >> ORPHAN;
+    }
+    commands{
+      unorder NOFORM;
+      insert NOFORM :< MOD;
+    }
+  }
+
+  rule corrige_move_noform_orphan_depois_do_head{
+    pattern{
+      NOFORM [noform_movido=yes];
+      HEADORPHAN -[1=orphan]-> ORPHAN;
+      NOFORM -> HEADORPHAN;
+      ORPHAN -[1=nmod|amod|nummod|det|case|advmod|mark]-> MOD;
+      MOD < NOFORM;
+      HEADORPHAN << ORPHAN;
+    }
+    commands{
+      unorder NOFORM;
+      insert NOFORM :< MOD;
+    }
+  }
+
+  rule corrige_move_noform_fixed{
+    pattern{
+      NOFORM [noform_movido=yes];
+      MOD -[1=fixed]-> FIXED;
+      FIXED < NOFORM;
+    }
+    commands{
+      unorder NOFORM;
+      insert NOFORM :< FIXED;
+    }
+  }
+
+  rule move_noform_multiplos_orphans{
+    pattern{
+      HEADORPHAN -[1=orphan]-> ORPHAN;
+      HEADORPHAN -[1=orphan]-> ORPHAN2;
+      NOFORM [wordform="__EMPTY__", !multiplos_orphans];
+      NOFORM -> HEADORPHAN;
+      NOFORM < ORPHAN;
+      ORPHAN2 << ORPHAN;
+    }
+    commands {
+      unorder NOFORM;
+      insert NOFORM :< ORPHAN2;
+      NOFORM.multiplos_orphans = yes;
+    }
+  }
+
+  rule move_noform_orphan_depois_do_head{
+    pattern{
+      HEADORPHAN -[1=orphan]-> ORPHAN;
+      NOFORM [wordform="__EMPTY__", !noform_movido, !multiplos_orphans];
+      NOFORM -> HEADORPHAN;
+      HEADORPHAN << ORPHAN;
+    }
+    commands{
+      unorder NOFORM;
+      insert NOFORM :< ORPHAN;
+      NOFORM.noform_movido = yes;
+    }
+  }
+
+  rule move_noform_orphan_antes_do_head{
+    pattern{
+      HEADORPHAN -[1=orphan]-> ORPHAN;
+      NOFORM [wordform="__EMPTY__", !noform_movido, !multiplos_orphans];
+      NOFORM -> HEADORPHAN;
+      HEADORPHAN >> ORPHAN;
+    }
+    commands{
+      unorder NOFORM;
+      insert NOFORM :< HEADORPHAN;
+      NOFORM.noform_movido = yes;
+    }
+  }
+
+  rule remove_noform_duplicado{
+    pattern{
+      HEADORPHAN -[1=orphan]-> ORPHAN;
+      NOFORM [wordform="__EMPTY__"];
+      NOFORM2 [wordform="__EMPTY__"];
+      NOFORM -> HEADORPHAN;
+      f: NOFORM2 -> HEADORPHAN;
+    }
+    commands{
+      del_node NOFORM2
+    }
+  }
+
+  rule lema_noform {
+    pattern{
+      NOFORM [wordform="__EMPTY__", !lemma];
+      CONJ -[1=conj]-> NOFORM;
+    }
+    commands{
+      NOFORM.lemma = CONJ.lemma;
+    }
+  }
+}
+
+package elvis{
+  % ELVIS: As regras são lidas de baixo para cima, da última para a primeira.
+  % Novas regras devem ser inseridas aqui no topo.  
+
+  % ELVIS: A companhia diz que o medicamento permite a os pacientes fazerem algumas ações simples sozinhos, como se sentar, levantar e até andar.
+  % Complementa a regra abaixo removendo o sujeito do DEPXCOMP [medicamento], pois é o obl [pacientes] quem deve ocupar esse lugar (e já passou a ocupar na regra abaixo)
+  rule corrige_obl_sujeito_do_depxcomp{
+    pattern{
+      HEADXCOMP -[1=xcomp]-> DEPXCOMP;
+      HEADXCOMP -[1=obl]-> OBL;
+      DEPXCOMP -[1=nsubj]-> OBL;
+      HEADXCOMP -[1=nsubj]-> NSUBJ;
+      f: DEPXCOMP -[1=nsubj]-> NSUBJ;
+    }
+    commands{del_edge f}
+  }
+  % ELVIS: A companhia diz que o medicamento permite a os pacientes fazerem algumas ações simples sozinhos, como se sentar, levantar e até andar.
+  % [pacientes] é nsubj do dependente de xcomp [fazerem]
+  % Segundo Magali, isso só acontece com os obl introduzidos por [a] e com o head de xcomp [permitir]
+  rule obl_sujeito_do_depxcomp{
+    pattern{
+      HEADXCOMP -[1=xcomp]-> DEPXCOMP;
+      HEADXCOMP -[1=obl,2=a]-> OBL;
+      HEADXCOMP [lemma=permitir]
+    }
+    without{DEPXCOMP -> OBL}
+    commands{add_edge f: DEPXCOMP -> OBL; f.label = "nsubj"; f.enhanced=yes}
+  }
+
+  % ELVIS: Essa lei permitiu-lhes ganhar um aumento de salário.
+  % [lei] não é nsubj de [ganhar], pois [lhes] já é o seu nsubj
+  % Complementa a regra abaixo.
+  rule corrige_iobj_vira_suj_do_depxcomp{
+    pattern{
+      HEADXCOMP -[1=xcomp]-> DEPXCOMP;
+      f: DEPXCOMP -[1=nsubj,enhanced=yes]-> SUJ1;
+      DEPXCOMP -[1=nsubj]-> SUJ2;
+      HEADXCOMP -[1=iobj]-> SUJ2;
+      HEADXCOMP -[1=nsubj]-> SUJ1;
+    }
+    commands{del_edge f}
+  }
+
+  % ELVIS: Essa lei permitiu-lhes ganhar um aumento de salário.
+  % [lhes] é nsubj de [ganhar]
+  rule iobj_vira_suj_do_depxcomp{
+    pattern{
+      HEADXCOMP -[1=iobj]-> IOBJ;
+      IOBJ [upos=PRON,PronType=Prs,Case=Dat];
+      HEADXCOMP -[1=xcomp]-> DEPXCOMP;
+    }
+    without{
+      DEPXCOMP -[1=nsubj]-> IOBJ;
+    }
+    commands{add_edge f:DEPXCOMP -> IOBJ; f.label = "nsubj"; f.enhanced=yes;}
+  }
+
+  % ELVIS: Essa é a maneira como eles usam a língua.
+  % [como] é ref de [maneira]
+  % [maneira] é obl de [usam]
+  % [como] não é advmod de [usam]
+  rule ref_aclrelcl{
+    pattern{
+      ADVREL [lemma="como"|"onde"|"quando",upos=ADV];
+      HEADACLRELCL -[acl:relcl]-> DEPACLRELCL;
+      h: DEPACLRELCL -[1=advmod,enhanced=yes]-> ADVREL;
+    }
+    without{
+      HEADACLRELCL -[1=ref]-> *;
+    }
+    commands{
+      add_edge f: HEADACLRELCL -> ADVREL; f.label = "ref"; f.enhanced=yes;
+      add_edge g: DEPACLRELCL -> HEADACLRELCL; g.label = "obl"; g.enhanced=yes;
+      del_edge h;
+    }
+  }
+
+  % ELVIS: Isso eu devo fazer mais tarde.
+  % [eu] é nsubj de [fazer]
+  % Complementa a regra abaixo.
+  rule suj_xcomp {
+    pattern{
+      HEADXCOMP -[1=xcomp]-> DEPXCOMP;
+      HEADXCOMP -[1=nsubj]-> SUJHEADXCOMP;
+    }
+    without{
+      DEPXCOMP -[1=nsubj]-> *;
+    }
+    commands{add_edge f:DEPXCOMP -> SUJHEADXCOMP; f.label = "nsubj"; f.enhanced=yes}
+  }
+
+  % ELVIS: Esse fenômeno se acentua ainda mais em a carne moída porque há mais superfícies a as quais o colágeno gelatinoso pode aderir.
+  % [quais], à esquerda do HEADXCOMP [pode], é obl de [aderir], e não de [pode]
+  rule obl_antes_do_head_xcomp{
+    pattern{
+      k: HEADXCOMP -[1=obl,enhanced=yes]-> OBL;
+      OBL << HEADXCOMP;
+      HEADXCOMP -[1=xcomp]-> DEPXCOMP;
+    }
+    without{
+      DEPXCOMP -[1=obl]-> OBL;
+    }
+    commands{
+      add_edge f:DEPXCOMP -> OBL; f.label = "obl"; f.enhanced=yes; 
+      del_edge k;
+    }
+  }
+
+  % ELVIS: Isso eu devo fazer mais tarde.
+  % [Isso] é obj de [fazer], e não de [devo]
+  % Restrição: Eu o vi chorar.
+  % [o] é nsubj de [chorar], e não obj
+  % [o] não pode ser PronType=Prs
+  % OBJ [PronType<>Prs]|[!PronType]: O nome disso é "disjunctive condition" - não passa no Grew.fr! Putz.
+  rule obj_antes_do_head_xcomp{
+    pattern{
+      k: HEADXCOMP -[1=obj,enhanced=yes]-> OBJ;
+      OBJ << HEADXCOMP;
+      %OBJ [PronType<>Prs]|[!PronType]; % COMENTAR ESSA LINHA PARA PASSAR NO GREW WEB
+      HEADXCOMP -[1=xcomp]-> DEPXCOMP;
+      l: DEPXCOMP -[1=nsubj]-> OBJ;
+    }
+    without{
+      DEPXCOMP -[1=obj]-> OBJ;
+    }
+    commands{
+      add_edge f:DEPXCOMP -> OBJ; f.label = "obj"; f.enhanced=yes; 
+      del_edge k;
+      del_edge l;
+    }
+  }
+% ELVIS: As regras são lidas de baixo para cima, da última para a primeira.
+% Idealmente, novas regras são colocas no topo desse pacote.
+}
+
+strat strat_modificadas_novas{
+  Seq(
         Onf(root),
         Onf(deep_features),
         Onf(null_nodes_head),
         Onf(null_nodes_dep),
         Onf(orphan_default_pck),
+        Onf(elvis_orphan),
         Onf(rel_pron),
         Onf(deep_subj_ud),
         Onf(coord_gov),
@@ -1475,7 +1780,38 @@ strat strat_principal{
         Onf(cc_mark),
         Onf(cc_info),
         Onf(copy_basic_enhanced),
-        Onf(cleaning_feat)
+        Onf(cleaning_feat),
+        Onf(elvis),
+        Onf(elvis_novas),
+        Onf(elvis_limpezas),
+    )
+}
+
+strat strat_modificadas{
+    Seq(
+        Onf(root),
+        Onf(deep_features),
+        Onf(null_nodes_head),
+        Onf(null_nodes_dep),
+        Onf(orphan_default_pck),
+        Onf(elvis_orphan),
+        Onf(rel_pron),
+        Onf(deep_subj_ud),
+        Onf(coord_gov),
+        Onf(null_subject),
+        Onf(coord_dep_left_pck),
+        Onf(coord_dep_right_pck),
+        Onf(deep_subj_ud),
+        Onf(rel_pron),
+        Onf(case_mwe),
+        Onf(case_mark),
+        Onf(case_info),
+        Onf(cc_mark),
+        Onf(cc_info),
+        Onf(copy_basic_enhanced),
+        Onf(cleaning_feat),
+        Onf(elvis),
+        Onf(elvis_limpezas),
     )
 }
 
