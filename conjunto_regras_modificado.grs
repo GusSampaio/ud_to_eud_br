@@ -974,7 +974,7 @@ package coord_dep_left_pck{
     rule coord_dep_left{
     pattern{
       CONJ1 -[1=conj]-> CONJ2;
-      e:CONJ1 -[1=advcl|discourse|parataxis|vocative]-> D;
+      e:CONJ1 -[1=advcl|discourse|parataxis|vocative|nsubj]-> D;
       D << CONJ1}
     without{CONJ2 -> D}
     commands{add_edge f:CONJ2 -> D; f.label = e.label; f.enhanced=yes}
@@ -1501,17 +1501,18 @@ package elvis_limpezas{
 }
 
 package elvis_orphan{
-  rule corrige_punct_dependente_do_orphan{
-    pattern{
-      NOFORM [wordform="__EMPTY__"];
-      HEADORPHAN -[1=orphan]-> ORPHAN;
-      NOFORM -> HEADORPHAN;
-      ORPHAN -[1=punct]-> PUNCT;
-      PUNCT << ORPHAN;
-    }
-    without{NOFORM -[1=punct,enhanced=yes]-> PUNCT}
-    commands{add_edge f:NOFORM -> PUNCT; f.label = "punct"; f.enhanced = yes}
-  }
+  % ELVIS: não vamos avaliar a colocação da pontuação, então vou comentar a regra
+  %rule corrige_punct_dependente_do_orphan{
+  %  pattern{
+  %    NOFORM [wordform="__EMPTY__"];
+  %    HEADORPHAN -[1=orphan]-> ORPHAN;
+  %    NOFORM -> HEADORPHAN;
+  %    ORPHAN -[1=punct]-> PUNCT;
+  %    PUNCT << ORPHAN;
+  %  }
+  %  without{NOFORM -[1=punct,enhanced=yes]-> PUNCT}
+  %  commands{add_edge f:NOFORM -> PUNCT; f.label = "punct"; f.enhanced = yes}
+  %}
 
   rule corrige_move_noform_orphan_antes_do_head{
     pattern{
@@ -1741,7 +1742,7 @@ package elvis{
     pattern{
       k: HEADXCOMP -[1=obj,enhanced=yes]-> OBJ;
       OBJ << HEADXCOMP;
-      %OBJ [PronType<>Prs]|[!PronType]; % COMENTAR ESSA LINHA PARA PASSAR NO GREW WEB
+      OBJ [PronType<>Prs]|[!PronType];
       HEADXCOMP -[1=xcomp]-> DEPXCOMP;
       l: DEPXCOMP -[1=nsubj]-> OBJ;
     }
