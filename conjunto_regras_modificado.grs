@@ -539,14 +539,14 @@ package rel_pron{
     rule move_basic_advmod_oblmod{
       pattern{ANT -[E:ref]-> PRO; e: H-[advmod]-> PRO;H[Dupos=ADJ|VERB]}
       without{ H -> ANT}
-      commands{add_edge H -[E:obl:mod]-> ANT}
+      commands{add_edge H -[E:obl]-> ANT} % ELVIS: Era obl:mod, estou deixando apenas como obl por enquanto.
     }
 
   % The enhanced ADVMOD dependency targeting the relative pronoun moves to the antecedent and its label becomes OBL:MOD.
     rule move_enhanced_advmod_oblmod{
       pattern{ANT -[E:ref]-> PRO; e: H-[E:advmod]-> PRO;H[Dupos=ADJ|VERB]}
       without{ H -> ANT}
-      commands{add_edge H -[E:obl:mod]-> ANT; del_edge e}
+      commands{add_edge H -[E:obl]-> ANT; del_edge e} % ELVIS: Era obl:mod, estou deixando apenas como obl por enquanto.
     }
 
   % The basic ADVMOD or DET dependency targeting the relative pronoun moves to the antecedent and its label becomes NMOD.
@@ -636,7 +636,7 @@ package deep_subj_ud{
   %Ex: UD_French-GSD fr-ud-train_02927 - À cause de cela, son avenir[SUBJ] semble[PRED] compromis[DPRED] à Bruxelles.
     rule xcomp_nsubj_past-part{
       pattern{
-        PRED -[1=xcomp]-> DPRED; DPRED[upos=VERB,VerbForm=Part];
+        PRED -[1=xcomp]-> DPRED; DPRED[upos=VERB,Voice=Pass];
         PRED -[1=nsubj]-> SUBJ}
       without{ * -[E:ref]-> SUBJ}% When a relative pronoun is subject, its antecedent is assigned the function of enhanced subject
       without{DPRED[NullSubject=Yes]}
@@ -689,7 +689,7 @@ package deep_subj_ud{
   %Ex: UD_French-GSD fr-ud-train_00581 - Pour autant les différents partis composant la majorité de gauche voient[PRED] leur poids[OBJ] modifié[DPRED].
     rule xcomp_obj_past-part{
       pattern{
-        DPRED[DVerbForm=Part];
+        DPRED[Voice=Pass];
         PRED -[1=xcomp]-> DPRED;
         PRED -[1=obj]-> OBJ}
       without{ * -[E:ref]-> OBJ}% When a relative pronoun is object, its antecedent is assigned the function of enhanced subject
@@ -973,15 +973,30 @@ package null_subject{
 
 package coord_dep_left_pck{
   % ELVIS: Criei essa, copiando a de baixo, para propagar nsubj de coordenada se esse sujeito não for dependente de relação "ref" (o próprio pronome relativo) e não o dependente de coordenada já não tiver sujeito.
-    rule coord_dep_left_nsubj{
+    rule coord_dep_left_nsubj-pass{
     pattern{
+      CONJ2 [Voice=Pass];
       CONJ1 -[1=conj]-> CONJ2;
       e:CONJ1 -[1=nsubj]-> D;
       D << CONJ1}
     without{CONJ2 -> D}
     without{CONJ2 -[1=nsubj]-> *}
     without{* -[1=ref]-> D}
-    commands{add_edge f:CONJ2 -> D; f.label = e.label; f.enhanced=yes}
+    without{CONJ2 -[orphan]-> *} % ELVIS: Adicionei, para não propagar dependentes de conj caso esse conj seja head de orphan
+    commands{add_edge f:CONJ2 -> D; f.label = "nsubj:pass"; f.enhanced=yes}
+    }
+
+    rule coord_dep_left_nsubj{
+    pattern{
+      CONJ2 [!Voice];
+      CONJ1 -[1=conj]-> CONJ2;
+      e:CONJ1 -[1=nsubj]-> D;
+      D << CONJ1}
+    without{CONJ2 -> D}
+    without{CONJ2 -[1=nsubj]-> *}
+    without{* -[1=ref]-> D}
+    without{CONJ2 -[orphan]-> *} % ELVIS: Adicionei, para não propagar dependentes de conj caso esse conj seja head de orphan
+    commands{add_edge f:CONJ2 -> D; f.label = "nsubj"; f.enhanced=yes}
     }
 
     rule coord_dep_left{
@@ -990,6 +1005,7 @@ package coord_dep_left_pck{
       e:CONJ1 -[1=advcl|discourse|parataxis|vocative]-> D;
       D << CONJ1}
     without{CONJ2 -> D}
+    without{CONJ2 -[orphan]-> *} % ELVIS: Adicionei, para não propagar dependentes de conj caso esse conj seja head de orphan
     commands{add_edge f:CONJ2 -> D; f.label = e.label; f.enhanced=yes}
     }
 
@@ -1336,7 +1352,7 @@ package cc_info{
   % The label of CONJ relations is auagmented with the Markcc feature of the coordinating conjunction.
   %Ex: email-enronsent05_01-0007-  the position of having[CONJ1] to justify why each and every party should be the exception to the suspension rather[D] than have[CONJ2] a general rule concerning how direct access should work for all parties.
   rule add_cc_name{
-    pattern{CONJ2 -[1=cc]-> D; CONJ2[Markcc]; e2: CONJ1 -[1=conj]-> CONJ2}
+    pattern{CONJ2 -[1=cc]-> D; CONJ2[Markcc]; e2: CONJ1 -[1=conj]-> CONJ2} 
     %without{D[ExtForm]}
     without{D[Dupos=SYM]}
     without{CONJ2 -[1=cc]-> D1; D1 << D}% Ex: They can freely write anything they like about our prophet, but[D1] if one raises doubts about the Holocaust he is either[D] fined[CONJ2] or sent to prison," he added.
@@ -1359,7 +1375,7 @@ package cc_info{
   rule add_name_comma{
     pattern{
       CONJ1 -[conj]-> CONJ2;
-      CONJ1 -[1=conj]-> CONJ3; CONJ2 << CONJ3; CONJ3 -[cc]-> C; C[lemma]}
+      CONJ1 -[1=conj]-> CONJ3; CONJ2 << CONJ3; CONJ3 -[cc]-> C; C[lemma]; C [lemma="e"|"ou"]} % ELVIS: Só propagar se for conjunção aditiva
     without{CONJ2 -[cc]-> *}
     without{C[lemma = "&"|"e/o"|"en/of"|"t/m"]} % "e/o" is a cooordinating conjunction in Italian, and "en/of", "t/m" in Dutch.
     without{CONJ1 -[conj]-> CONJ4; CONJ2 << CONJ4; CONJ4 << CONJ3; CONJ4 -[cc]-> *}
@@ -1730,20 +1746,21 @@ package elvis{
 
   % ELVIS: Esse fenômeno se acentua ainda mais em a carne moída porque há mais superfícies a as quais o colágeno gelatinoso pode aderir.
   % [quais], à esquerda do HEADXCOMP [pode], é obl de [aderir], e não de [pode]
-  rule obl_antes_do_head_xcomp{
-    pattern{
-      k: HEADXCOMP -[1=obl,enhanced=yes]-> OBL;
-      OBL << HEADXCOMP;
-      HEADXCOMP -[1=xcomp]-> DEPXCOMP;
-    }
-    without{
-      DEPXCOMP -[1=obl]-> OBL;
-    }
-    commands{
-      add_edge f:DEPXCOMP -> OBL; f.label = "obl"; f.enhanced=yes; 
-      del_edge k;
-    }
-  }
+  % A regra está causando muitos efeitos colaterais, removendo.
+  %rule obl_antes_do_head_xcomp{
+  %  pattern{
+  %    k: HEADXCOMP -[1=obl,enhanced=yes]-> OBL;
+  %    OBL << HEADXCOMP;
+  %    HEADXCOMP -[1=xcomp]-> DEPXCOMP;
+  %  }
+  %  without{
+  %    DEPXCOMP -[1=obl]-> OBL;
+  %  }
+  %  commands{
+  %    add_edge f:DEPXCOMP -> OBL; f.label = "obl"; f.enhanced=yes; 
+  %    del_edge k;
+  %  }
+  %}
 
   % ELVIS: Isso eu devo fazer mais tarde.
   % [Isso] é obj de [fazer], e não de [devo]
