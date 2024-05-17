@@ -1,0 +1,1848 @@
+package root {
+  rule r1 {
+    pattern { e: M -[^root]-> N; M[form = "__0__"] }
+    commands { del_edge e; add_edge M -[root]-> N }
+  }
+
+  rule r2 {
+    pattern { e: M -[root]-> N; M[form <> "__0__"] }
+    commands { del_edge e; add_edge M -[dep]-> N }
+  }
+}
+
+% =============================================================================================
+% Addition of deep features to tokens
+package deep_features{
+
+  % Deep PERSON for verbs without auxiliary and copula.
+    rule deep_person{
+      pattern{V[upos=VERB,Person]}
+      without{V -[1=aux|cop]-> AUX}
+      without{V[DPerson]}
+      commands{V.DPerson=V.Person}
+    }
+
+  % Deep TENSE for verbs with an auxiliary or a copula.
+    rule deep_person_aux-cop{
+      pattern{AUX[Person]; V -[1=aux|cop]-> AUX}
+      without{V -[1=aux]-> AUX1; AUX1 << AUX} % The leftmost auxiliary determines the Tense feaure
+      without{V[DPerson]}
+      commands{V.DPerson=AUX.Person}
+    }
+
+  % Deep TENSE for verbs without auxiliary.
+    rule deep_tense{
+      pattern{V[Tense]}
+      without{V -[1=aux]-> AUX}
+      without{V[DTense]}
+      commands{V.DTense=V.Tense}
+    }
+
+  % Deep TENSE for verbs with an auxiliary.
+    rule deep_tense_aux{
+      pattern{AUX[Tense]; V -[1=aux]-> AUX}
+      without{V -[1=aux]-> AUX1; AUX1 << AUX} % The leftmost auxiliary determines the Tense feaure.
+      without{V[DTense]}
+      commands{V.DTense=AUX.Tense}
+    }
+
+  % Deep UPOS for words that are not head of idioms or that have no converted POS.
+    rule deep_upos{
+      pattern{X[upos]}
+      without{X[ExtPos, PhraseType=Idiom]} % Idiom heads are excluded
+      without{X[ExtPos, !PhraseType]} % Words with converted POS are excluded
+      without{X[Dupos]}
+      commands{X.Dupos=X.upos}
+    }
+
+  % Deep UPOS for words that are head of idioms or have a converted POS.
+    rule deep_upos_idiom-converted-pos{
+      pattern{X[ExtPos]}
+      without{X[ExtPos, PhraseType=Title]} % Title heads are excluded
+      without{X[Dupos]}
+      commands{X.Dupos=X.ExtPos}
+    }
+
+  % Deep VERBFORM for verbs without auxiliary.
+    rule deep_verbform{
+      pattern{V[VerbForm <> Vnoun]}
+      without{V -[1=aux]-> AUX; AUX[VerbForm]}
+      without{V[DVerbForm]}
+      commands{V.DVerbForm=V.VerbForm}
+    }
+
+  % Deep VERBFORM for verbs with an auxiliary.
+    rule deep_verbform_aux{
+      pattern{AUX[VerbForm <> Vnoun]; V -[1=aux]-> AUX}
+      without{V -[1=aux]-> AUX1; AUX1 << AUX} % The leftmost auxiliary determines the VerbForm feaure.
+      without{V[DVerbForm]}
+      commands{V.DVerbForm=AUX.VerbForm}
+    }
+
+  % Deep VERBFORM for words with a copula.
+    rule deep_verbform_cop{
+      pattern{COP[DVerbForm]; PRED -[1=cop]-> COP; PRED[!DVerbForm]}
+      commands{PRED.DVerbForm = COP.DVerbForm}
+    }
+
+}
+
+% =============================================================================================
+% Addition of null nodes for elided words. In particular, the heads of certain coordination conjuncts are elided, and they are represented by null nodes.
+% The package creates a null node and attaches the head of the conjunct with ellipsis to this node. The label of the added relation is reflected in the name of the rule performing the attachment.
+package null_nodes_head{
+
+  %Ex: UD_French-GSD fr-ud-train_05059 - une endosymbiose[CONJ1] primaire[MOD1] (toutes les plantes vertes et la plupart des algues vertes) ou secondaire[ADJ2] avec une algue verte
+    rule conj_amod{
+      pattern{
+        e:CONJ1 -[conj]-> ADJ2;
+        CONJ1 -[1=acl|amod|nmod]-> MOD1; 
+        ADJ2[Dupos=ADJ];
+        ADJ2 -[orphan]-> *}
+      without{ADJ2 -[case]-> *}
+      without{* -[^conj]-> ADJ2}
+      commands{
+        add_node CONJ2 :< ADJ2;
+        add_edge f:CONJ1 -> CONJ2;f.label = e.label; f.enhanced=yes;
+        CONJ2.upos=CONJ1.upos; CONJ2.Dupos=CONJ1.Dupos;
+        CONJ2.textform="_"; CONJ2.wordform="__EMPTY__";
+        add_edge CONJ2 -[E:amod]-> ADJ2}
+    }
+
+  %Ex: UD_French-GSD fr-ud-train_09773 - il appartient[CONJ1] à la Commission de proposer[SUBJ1] de nouveaux actes législatifs européens et au Parlement et au Conseil de les adopter[SUBJ2].
+    rule conj_csubj{
+      pattern{
+        e:CONJ1 -[conj]-> SUBJ2;
+        e1:CONJ1 -[1=csubj]-> SUBJ1; CONJ1[DVerbForm];
+        SUBJ2[DVerbForm];
+        SUBJ2 -[orphan]-> *}
+      without{CONJ1 -[obj|xcomp]-> ARG; ARG[Dupos=NOUN|NUM|PRON|PROPN|X]; CONJ1 << ARG}
+      without{* -[^conj]-> SUBJ2}
+      commands{
+        add_node CONJ2 :< SUBJ2;
+        add_edge f:CONJ1 -> CONJ2;f.label = e.label; f.enhanced=yes;
+        CONJ2.upos=CONJ1.upos; CONJ2.Dupos=CONJ1.Dupos;
+        add_edge CONJ1 -[E:conj]-> CONJ2;
+        CONJ2.upos=CONJ1.upos; CONJ2.Dupos=CONJ1.Dupos;
+        CONJ2.DVerbForm = CONJ1.DVerbForm;
+        CONJ2.textform="_"; CONJ2.wordform="__EMPTY__";
+        add_edge f1: CONJ2 -> SUBJ2; f1.label=e1.label; f1.enhanced=yes}
+    }
+
+  %Ex: UD_French-GSD fr-ud-train_10199 - dans la période[CONJ1] de 681[MOD1] à 1018 (Premier Empire[N1]) et de 1185[N2] à 1396 (Second Empire)
+  %Ex: UD_French-GSD fr-ud-train_14393 - des scènes[CONJ1] sexuellement explicites[MOD1] dans une limousine ou autour d'un jacuzzi et d'un taureau mécanique, ou encore de striptease[N2] dans une cage
+    rule conj_nmod{
+      pattern{
+        e:CONJ1 -[conj]-> N2;
+        CONJ1 -[1=acl|amod|nmod]-> MOD1; 
+        N2[Dupos=NOUN|NUM|PRON|PROPN|X];
+        N2 -[orphan]-> *}
+      without{* -[^conj]-> N2}
+      commands{
+        add_node CONJ2 :< N2;
+        add_edge CONJ1 -[E:conj]-> CONJ2;
+        CONJ2.upos=CONJ1.Dupos; CONJ2.Dupos=CONJ1.Dupos;
+        CONJ2.textform="_"; CONJ2.wordform="__EMPTY__";
+        add_edge CONJ2 -[E:nmod]-> N2}
+    }
+
+  %Ex: UD_French-GSD fr-ud-train_02404 - Les filles[SUBJ1] dormaient[CONJ1] dans la même chambre et les garçons[SUBJ2] également.
+  %Ex: UD_French-GSD fr-ud-train_10049 - Une usine[SUBJ1] était implantée[CONJ1] à Aubervilliers et l'autre[SUBJ2] à Grasse.
+  %Ex: UD_French-GSD fr-ud-train_01985 - Quatre[SUBJ1] d'entre eux sont classifié[CONJ1] en tant que céphalées primaires, 5-12 groupes[SUBJ2] en tant que céphalées secondaires
+  %Ex: UD_French-GSD fr-ud-train_00367 - Le biélorusse[SUBJ1] était parlé[CONJ1] à la maison par 46,06% de la population et le russe[SUBJ2] par 52,35%.
+  %Ex: UD_French-GSD fr-ud-train_03623 - À Dortmund circulent[CONJ1] des cabines[SUBJ1] uniques, à Düsseldorf des rames[SUBJ2] de deux cabines.
+  %Ex: UD_English-PUD n01012003 - First one[SUBJ1] of the Yazidi women started[CONJ1] crying, then one[SUBJ2] of her friends.
+    rule conj_nsubj{
+      pattern{
+        e:CONJ1 -[conj]-> SUBJ2;
+        e1:CONJ1 -[1=nsubj]-> SUBJ1; CONJ1[DVerbForm];
+        SUBJ2[Dupos=NOUN|NUM|PRON|PROPN|X];
+        SUBJ2 -[orphan]-> *}
+      without{CONJ1 -[obj|xcomp]-> ARG; ARG[Dupos=NOUN|PRON|PROPN|X]; CONJ1 << ARG}
+      without{SUBJ2 -[case]-> *}
+      without{* -[^conj]-> SUBJ2}
+      commands{
+        add_node CONJ2 :< SUBJ2;
+        add_edge f:CONJ1 -> CONJ2;f.label = e.label; f.enhanced=yes;
+        CONJ2.upos=CONJ1.upos; CONJ2.Dupos=CONJ1.Dupos;
+        add_edge CONJ1 -[E:conj]-> CONJ2;
+        CONJ2.upos=CONJ1.upos; CONJ2.Dupos=CONJ1.Dupos;
+        CONJ2.DVerbForm = CONJ1.DVerbForm;
+      CONJ2.textform="_"; CONJ2.wordform="__EMPTY__";
+        add_edge f1: CONJ2 -> SUBJ2; f1.label=e1.label; f1.enhanced=yes}
+    }
+
+  %Ex: UD_French-GSD fr-ud-train_12347 - le Dow[SUBJ1] Jones prenait[CONJ1] 0,02%[ARG1] et le Nasdaq[SUBJ2] 0,56%[OBJ2]
+    rule conj_nsubj_obj-xcomp{
+      pattern{
+        e:CONJ1 -[conj]-> SUBJ2;
+        e1:CONJ1 -[1=nsubj]-> SUBJ1;  SUBJ1 << CONJ1; CONJ1[DVerbForm];
+        CONJ1 -[obj|xcomp]-> ARG1; CONJ1 << ARG1; ARG1 << SUBJ2;
+        SUBJ2[Dupos=NOUN|NUM|PRON|PROPN|X];
+        SUBJ2 -[orphan]-> OBJ2; OBJ2[Dupos=NOUN|PRON|PROPN|X]; SUBJ2 << OBJ2}
+      without{SUBJ2 -[case]-> *}
+      without{* -[^conj]-> SUBJ2}
+      commands{
+        add_node CONJ2 :< SUBJ2;
+        CONJ2.upos=CONJ1.upos; CONJ2.Dupos=CONJ1.Dupos;
+        add_edge CONJ1 -[E:conj]-> CONJ2;
+        CONJ2.upos=CONJ1.upos; CONJ2.Dupos=CONJ1.Dupos;
+        CONJ2.DVerbForm = CONJ1.DVerbForm;
+        CONJ2.textform="_"; CONJ2.wordform="__EMPTY__";
+        add_edge f1: CONJ2 -> SUBJ2; f1.label=e1.label; f1.enhanced=yes}
+    }
+    
+  %Ex: UD_French-GSD fr-ud-train_10176 - Nous n'avons pas pris[CONJ1] de desserts[OBJ1] faute de temps ni de cafés[OBJ2] faute du prix des boissons.
+  %Ex: UD_French-GSD fr-ud-test_00115 - c'est M. Moussavi qui a vu[CONJ1] lundi matin son domicile[OBJ] encerclé et ses téléphones[OBJ2] coupés,
+    rule conj_obj{
+      pattern{
+        e:CONJ1 -[conj]-> OBJ2;
+        CONJ1 -[1=obj]-> OBJ1; CONJ1 << OBJ1; CONJ1[DVerbForm];
+        OBJ2[Dupos=NOUN|NUM|PRON|PROPN|X];
+        OBJ2 -[orphan]-> *}
+      without{OBJ2 -[case]-> *}
+      without{OBJ2 -[orphan]-> N2; N2[Dupos=NOUN|PRON|PROPN|X]; OBJ2 << N2}
+      without{* -[^conj]-> OBJ2}
+      commands{
+        add_node CONJ2 :< OBJ2;
+        add_edge CONJ1 -[E:conj]-> CONJ2;
+        CONJ2.upos=CONJ1.upos; CONJ2.Dupos=CONJ1.Dupos;
+        CONJ2.textform="_"; CONJ2.wordform="__EMPTY__";
+        CONJ2.DVerbForm = CONJ1.DVerbForm;
+        add_edge CONJ2 -[E:obj]-> OBJ2}
+    }
+
+  %Ex: UD_French-GSD fr-ud-train_03620 - Elle présente[CONJ1] quatre doigts[OBJ1] aux pattes antérieures et cinq[OBJ2] aux pattes[OBL2] postérieures.
+  %Ex: UD_French-GSD fr-ud-train_07182 - L'abbé Pierre a rencontré[CONJ1] au cours de sa vie les papes[OBJ1] Pie, Pie, Jean et à plusieurs reprises[OBL2] Jean-Paul[OBJ2] ;
+    rule conj_obj_obl{
+      pattern{
+        e:CONJ1 -[conj]-> OBJ2;
+        CONJ1 -[1=obj]-> OBJ1; CONJ1 << OBJ1; CONJ1[DVerbForm];
+        OBJ2[Dupos=NOUN|NUM|PRON|PROPN|X];
+        OBJ2 -[orphan]-> OBL2; OBL2[Dupos=NOUN|NUM|PRON|PROPN|X]; OBL2 -[case]-> *}
+      without{OBJ2 -[case]-> *}
+      without{* -[^conj]-> OBJ2}
+      commands{
+        add_node CONJ2 :< OBJ2;
+        add_edge CONJ1 -[E:conj]-> CONJ2;
+        CONJ2.upos=CONJ1.upos; CONJ2.Dupos=CONJ1.Dupos;
+        CONJ2.textform="_"; CONJ2.wordform="__EMPTY__";
+        CONJ2.DVerbForm = CONJ1.DVerbForm;
+        add_edge CONJ2 -[E:obj]-> OBJ2}
+    }
+
+  %Ex: UD_French-GSD fr-ud-train_08832 - Le Crédit Coopératif est régi[CONJ1], principalement, comme coopérative par la législation coopérative, et en tant que banque, par le Code[OBL2] monétaire et financier.
+  %Ex: UD_French-GSD fr-ud-train_03725 - Il voyage[CONJ1] à travers les terres du Mexique à Panamá, puis par bateau[OBL2] jusqu'au Pérou.
+  %Ex: UD_English-PUD  w01138045 - During this time, Marcelle was often left alone in the room while Piaf and Mômone were out[CONJ1] on the streets or at the club[OBL2] singing.
+    rule conj_obl{
+      pattern{
+        e:CONJ1 -[conj]-> OBL2;
+        CONJ1[DVerbForm];
+        OBL2 -[case]-> *;
+        OBL2 -[orphan]-> *}
+      without{* -[^conj]-> OBL2}
+      commands{
+        add_node CONJ2 :< OBL2;
+        add_edge CONJ1 -[E:conj]-> CONJ2;
+        CONJ2.upos=CONJ1.upos; CONJ2.Dupos=CONJ1.Dupos;
+        CONJ2.textform="_"; CONJ2.wordform="__EMPTY__";
+        CONJ2.DVerbForm = CONJ1.DVerbForm;
+        add_edge CONJ2 -[E:obl]-> OBL2}
+    }
+
+  %Ex: UD_French-GSD fr-ud-train_00028 - ARF (Application Roll-over Facility) est un logiciel de haute disponibilité, fonctionnant[CONJ1] sous AIX sur les machines Bull Escala ou Linux[OBL2] sur les serveurs Bull Novascale.
+    rule conj_obl-dir{
+      pattern{
+        e:CONJ1 -[1=conj]-> OBL2;
+        CONJ1[DVerbForm];
+        OBL2 -[orphan]-> *}
+      without{CONJ1 -[1=csubj|nsubj|obj|xcomp]-> *}
+      without{* -[^conj]-> OBL2}
+      commands{
+        add_node CONJ2 :< OBL2;
+        add_edge CONJ1 -[E:conj]-> CONJ2;
+        CONJ2.upos=CONJ1.upos; CONJ2.Dupos=CONJ1.Dupos;
+        CONJ2.textform="_"; CONJ2.wordform="__EMPTY__";
+        CONJ2.DVerbForm = CONJ1.DVerbForm;
+        add_edge CONJ2 -[E:obl]-> OBL2}
+    }
+
+  %Ex: UD_French-GSD fr-ud-train_11187 - Il fut élu[CONJ1] membre[PRED1] associé de la Royal Academy en 1861 et membre[PRED2] à part entière en 1869 ;
+    rule conj_xcomp-pred{
+      pattern{
+        e:CONJ1 -[conj]-> PRED2;
+        CONJ1 -[1=xcomp]-> PRED1; CONJ1 << PRED1;
+        PRED2[Dupos=ADJ|ADV|NOUN|VERB];
+        PRED2 -[orphan]-> *;
+        CONJ1 [DVerbForm]
+      }
+      without{CONJ1 -[obj]-> OB1}
+      without{* -[^conj]-> PRED2}
+      commands{
+        add_node CONJ2 :< PRED2;
+        add_edge CONJ1 -[E:conj]-> CONJ2;
+        CONJ2.upos=CONJ1.upos; CONJ2.Dupos=CONJ1.Dupos;
+        CONJ2.textform="_"; CONJ2.wordform="__EMPTY__";
+        CONJ2.DVerbForm = CONJ1.DVerbForm;
+        add_edge CONJ2 -[E:xcomp:pred]-> PRED2}
+    }
+
+  % Ex: UD_French-GSD fr-ud-dev_01529 - une tragédie qui s'est jouée[V1] en deux fois : la première fois en deux soirées[D] 4 et 5 mai 1946 au Théâtre municipal de Hà Nội et les deux autres soirées, 23 et 24 mai 1940 au Théâtre provincial de Hà Tĩnh
+    rule parataxis_obl{
+      pattern{
+        e:V1 -[1=parataxis]-> D; V1[DVerbForm];
+        D -[orphan]-> *; D -[case]-> *;
+        e1:D -[punct]-> P; P[Dupos=PUNCT,lemma = ":"]}
+      without{* -[1 <> parataxis]-> D}
+      commands{
+        add_node V2 :< D;
+        add_edge V1 -[E:parataxis]-> V2;
+        V2.upos=V1.upos; V2.Dupos=V1.Dupos;
+        V2.textform="_";V2.wordform="__EMPTY__";
+        V2.DVerbForm = V1.DVerbForm;
+        add_edge V2 -[E:obl]-> D;
+        add_edge V2 -[E:punct]-> P}
+    }
+
+    rule shift_cc_punct{
+      pattern{
+        CONJ1 -[1=conj]-> CONJ2; CONJ2[wordform="__EMPTY__"];
+        CONJ2 -> HEAD;
+        e:HEAD -[1=cc|punct]-> C; C << HEAD}
+      without{C[Dupos=PUNCT, lemma <> ","]}
+      without{ * -[enhanced=yes]-> C}
+      commands{add_edge f:CONJ2 -> C; f.label=e.label; f.enhanced=yes}
+    }
+     
+}
+
+% =============================================================================================
+% The package adds relations to the null node  for all orphan relations.
+package null_nodes_dep{
+
+    rule orphan_advcl-mark{
+      pattern{
+        CONJ2[DVerbForm,wordform="__EMPTY__"];
+        CONJ2 -[1=nsubj|obj|obl]-> HEAD;
+        e: HEAD -[orphan]-> CL; CL[DVerbForm]; CL -[mark]-> *}
+      without{CONJ1 -[1=conj]-> CONJ2; CONJ1 -[ccomp|xcomp]-> CL1; CL1[DVerbForm]}
+      without{CONJ2 -> CL}
+      commands{add_edge CONJ2 -[E:advcl]-> CL}
+    }
+
+  %Ex: UD_English-PUD  w01138045 - During this time, Marcelle was often left alone in the room while Piaf and Mômone were out on the streets or at the club[HEAD] singing[CL].
+    rule orphan_advcl-dir{
+      pattern{
+        CONJ2[DVerbForm,wordform="__EMPTY__"];
+        CONJ2 -[1=nsubj|obj|obl]-> HEAD;
+        e: HEAD -[orphan]-> CL; CL[DVerbForm=Ger|Part]}
+      without{CONJ2 -> CL}
+      commands{add_edge CONJ2 -[E:advcl]-> CL}
+    }
+  %Ex: UD_French-GSD fr-ud-train_02404 - Les filles dormaient dans la même chambre et les garçons[HEAD] également[ADV].
+  %Ex: UD_French-GSD fr-ud-train_11187 - Il fut élu membre associé de la Royal Academy en 1861 et membre[HEAD] à part[ADV] entière en 1869 ;
+  %Ex: UD_English-PUD  n01012003 - First one of the Yazidi women started crying, then[ADV] one[HEAD] of her friends.
+    rule orphan_advmod{
+      pattern{
+        CONJ2[wordform="__EMPTY__"];
+        CONJ2 -[1=nsubj|obj|obl|xcomp]-> HEAD;
+        e: HEAD -[orphan]-> ADV; ADV[Dupos=ADV]}
+      without{CONJ2 -> ADV}
+      commands{add_edge CONJ2 -[E:advmod]-> ADV}
+    }
+
+  %Ex: UD_French-GSD fr-ud-train_10199 - dans la période de 681 à 1018 (Premier Empire) et de 1185[HEAD] à 1396 (Second Empire[N])
+    rule orphan_appos{
+      pattern{
+        CONJ2[wordform="__EMPTY__"];
+        CONJ2 -[1=nmod]-> HEAD;
+        e: HEAD -[orphan]-> N; N[Dupos=NOUN|NUM|PRON|PROPN|X];
+        N -[punct]-> P1; N -[punct]-> P2; P1 << N; N << P2}
+      without{CONJ2 -> N}
+      commands{add_edge CONJ2 -[E:appos]-> N}
+    }
+
+  %Ex: UD_French-GSD fr-ud-train_05059 - une endosymbiose primaire (toutes les plantes vertes et la plupart des algues vertes) ou secondaire[HEAD] avec une algue[N] verte
+  %Ex: UD_French-GSD fr-ud-train_14393 - des scènes sexuellement explicites dans une limousine ou autour d'un jacuzzi et d'un taureau mécanique, ou encore de striptease[HEAD] dans une cage[N]
+    rule orphan_nmod{
+      pattern{
+        CONJ2[wordform="__EMPTY__"];
+        CONJ2 -[1=acl|amod|nmod]-> HEAD;
+        e: HEAD -[orphan]-> N; N[Dupos=NOUN|NUM|PRON|PROPN|X]}
+      without{ N -[punct]-> P1; N -[punct]-> P2; P1 << N; N << P2}
+      without{CONJ2 -> N}
+      commands{add_edge CONJ2 -[E:nmod]-> N}
+    }
+
+  %Ex: UD_French-GSD fr-ud-train_12347 - le Dow Jones prenait 0,02% et le Nasdaq[HEAD] 0,56%[OBJ]
+    rule orphan_obj{
+      pattern{
+        CONJ1 -[1=conj]-> CONJ2; CONJ1 -[obj]-> *;
+        CONJ2[DVerbForm,wordform="__EMPTY__"];
+        CONJ2 -[1=nsubj]-> HEAD;
+        e: HEAD -[orphan]-> OBJ; OBJ[Dupos=NOUN|NUM|PRON|PROPN|X]}
+      without{OBJ -[1=case]-> *}
+      without{CONJ2 -> OBJ}
+      commands{add_edge CONJ2 -[E:obj]-> OBJ}
+    }
+
+  %Ex: UD_French-GSD fr-ud-train_00367 - Le biélorusse était parlé à la maison par 46,06% de la population et le russe[HEAD] par 52,35%[OBL].
+  %Ex: UD_French-GSD fr-ud-train_03623 - À Dortmund circulent des cabines uniques, à Düsseldorf[OBL] des rames[HEAD] de deux cabines.
+  %Ex: UD_French-GSD fr-ud-train_09773 - il appartient à la Commission de proposer de nouveaux actes législatifs européens et au Parlement[OBL] et au Conseil de les adopter[HEAD].
+  %Ex: UD_English-PUD w01006027 - In 1912 was founded the first film company (Athina Film) and in 1916[OBL] the Asty Film[HEAD].
+    rule orphan_obl{
+      pattern{
+        CONJ2[DVerbForm,wordform="__EMPTY__"];
+        CONJ2 -[1=csubj|nsubj|obj|obl|xcomp]-> HEAD;
+        e: HEAD -[orphan]-> OBL;
+        OBL -[case]-> *}
+      without{CONJ2 -> OBL}
+      commands{add_edge CONJ2 -[E:obl]-> OBL}
+    }
+
+    rule orphan_obl-dir{
+      pattern{
+        CONJ2[DVerbForm,wordform="__EMPTY__"];
+        CONJ2 -[1=csubj|nsubj|obj|obl|xcomp]-> HEAD;
+        e: HEAD -[orphan]-> OBL; OBL[Dupos=NOUN|NUM|PRON|PROPN|X]}
+      without{OBL -[case]-> *}
+      without{CONJ1 -[1=conj]-> CONJ2; CONJ1 -[obj]-> *}
+      without{CONJ2 -> OBL}
+      commands{add_edge CONJ2 -[E:obl]-> OBL}
+    }
+
+  %Ex: UD_French-GSD fr-ud-dev_00520 - Là, il remportera 2 fois le titre poids-lourd de la IZW et une fois[OBL] le titre par équipe avec Derek Neikirk.
+    rule orphan_obl-dir_obj{
+      pattern{
+        CONJ2[DVerbForm,wordform="__EMPTY__"];
+        CONJ2 -[1=csubj|nsubj|obj|obl|xcomp]-> HEAD;
+        CONJ2 -[1=obj]-> *;
+        e: HEAD -[orphan]-> OBL; OBL[Dupos=NOUN|NUM|PRON|PROPN|X]}
+      without{OBL -[case]-> *}
+      without{CONJ2 -> OBL}
+      commands{add_edge CONJ2 -[E:obl]-> OBL}
+    }
+    
+  %Ex: UD_French-GSD fr-ud-test_00115 - c'est M. Moussavi qui a vu[CONJ1] lundi matin son domicile[OBJ] encerclé et ses téléphones[OBJ2] coupés,
+    rule orphan_xcomp-verb{
+      pattern{
+        CONJ2[DVerbForm,wordform=""];
+        CONJ2 -[1=csubj|nsubj|obj]-> HEAD;
+        e: HEAD -[orphan]-> PRED; PRED[DVerbForm=Ger|Inf|Part]}
+      without{CONJ2 -> PRED}
+      commands{add_edge CONJ2 -[E:xcomp]-> PRED}
+    }
+
+}
+
+% =============================================================================================
+% The rule adds a DEP dependency from the null node to all ORPHAN dependents that were not processed previously.
+package orphan_default_pck{  
+  rule orphan_default{
+    pattern{
+      H -[orphan]-> D;
+      NULL[wordform="__EMPTY__"]; NULL -> H}
+    without{NULL -> D}
+    commands{add_edge NULL -[E:dep]-> D}
+  }
+}
+
+% =============================================================================================
+% Shift of dependencies targeting relative pronouns to their antecedent for relative and cleft clauses. The link between a relative pronoun and its antecedent is represented by a REF relation.
+package rel_pron{
+
+  % An ANTREL dependency is initiated between the relative pronoun and its governor.
+    rule init_antrel{
+      pattern{ H -[!enhanced]-> PRO; PRO [Dupos=ADV|DET|PRON,PronType=Rel|"Int,Rel"]}
+      without{* -[E:ref]-> PRO}
+      without{PRO[ErrorPronType=Yes]}
+      without{H -[acl:relcl|advcl:cleft|conj|root]-> PRO}
+      without{H -[1=conj]-> PRO}
+      without{H -[ANTREL]->PRO}
+      commands{add_edge H -[ANTREL]->PRO}
+    }
+
+  % The ANTREL relation is shifted from its source to the governor of this source.
+    rule shift_ref{
+      pattern{e:H -[ANTREL]-> PRO; H1 -[!enhanced]-> H}
+      without{H1 -[acl:relcl|advcl:cleft|conj]-> H}
+      without{ H1 -[ANTREL]-> PRO}
+      commands{del_edge e; add_edge H1 -[ANTREL]-> PRO}
+    }
+
+  % The ANTREL relation has reached the antecedent of the relative pronoun.
+    rule mark_antecedent{
+      pattern{
+        e:H -[ANTREL]-> PRO;
+        H1 -[acl:relcl|advcl:cleft]-> H}
+      without{H1 -[E:ref]-> PRO}
+      commands{del_edge e; add_edge H1 -[E:ref]-> PRO}
+    }
+
+  % The ANTREL relation has reached a coordination between a first conjunct and the relative clause containing the relative pronoun.
+    rule mark_antecedent_conj{
+      pattern{
+        e:H -[ANTREL]-> PRO;
+        H1 -[conj]-> H; H2 -[1=acl|amod|advmod|nmod]->H1}
+      without{H2 -[E:ref]-> PRO}
+      commands{del_edge e; add_edge H2 -[E:ref]-> PRO}
+    }
+
+  % The ANTREL relation has reached the root of the tree, which is an impasse.
+    rule mark_error1{
+      pattern{
+        e:H -[ANTREL]-> PRO;
+        H1 -[1=root]-> H}
+      without{PRO[ErrorPronType]}
+      commands{del_edge e; PRO.ErrorPronType=Yes}
+    }
+
+  % The ANTREL relation has reached a CONJ dependency, which is an impasse.
+    rule mark_error2{
+      pattern{
+        e:H -[ANTREL]-> PRO;
+        H1 -[1=conj]-> H}
+      without{ H2 -[1=acl|amod|advmod|nmod]->H1}
+      without{PRO[ErrorPronType]}
+      commands{del_edge e; PRO.ErrorPronType=Yes}
+    }
+
+  % The basic dependency targeting the relative pronoun, which is not ADVMOD, moves to the antecedent.
+    rule move_basic_dep{
+      pattern{
+        ANT -[E:ref]-> PRO;
+        e: H-[1 <> advmod|det|ref, !enhanced]-> PRO}
+      without{ H -> ANT}
+      commands{add_edge f:H -> ANT; f.label=e.label; f.enhanced = yes;}
+    }
+
+  % The basic dependency targeting the relative pronoun, which is a determiner, moves to the antecedent and becomes an NMOD dependency.
+  %Ex: isst_tanl-3014 - La mostra[ANT], il cui[DET] allestimento ha richiesto 41,7 milioni di scellini 
+    rule move_basic_det{
+      pattern{
+        ANT -[E:ref]-> DET;
+        e: H-[1=det, !enhanced]-> DET}
+      without{ H -> ANT}
+      commands{add_edge f:H -> ANT; f.label=e.label; f.1=nmod; f.enhanced = yes;}
+    }
+
+  % The enhanced dependency targeting the relative pronoun, which is not ADVMOD, moves to the antecedent.
+    rule move_enhanced_dep{
+      pattern{
+        ANT -[E:ref]-> PRO;
+        e: H-[1 <> advmod|ref, enhanced=yes]-> PRO}
+      without{ H -> ANT}
+      commands{add_edge f:H -> ANT; f.label=e.label; f.enhanced = yes; del_edge e}
+    }
+
+  % The basic ADVMOD dependency targeting the relative pronoun moves to the antecedent and its label becomes OBL:MOD.
+    rule move_basic_advmod_oblmod{
+      pattern{ANT -[E:ref]-> PRO; e: H-[advmod]-> PRO;H[Dupos=ADJ|VERB]}
+      without{ H -> ANT}
+      commands{add_edge H -[E:obl]-> ANT} % ELVIS: Era obl:mod, estou deixando apenas como obl por enquanto.
+    }
+
+  % The enhanced ADVMOD dependency targeting the relative pronoun moves to the antecedent and its label becomes OBL:MOD.
+    rule move_enhanced_advmod_oblmod{
+      pattern{ANT -[E:ref]-> PRO; e: H-[E:advmod]-> PRO;H[Dupos=ADJ|VERB]}
+      without{ H -> ANT}
+      commands{add_edge H -[E:obl]-> ANT; del_edge e} % ELVIS: Era obl:mod, estou deixando apenas como obl por enquanto.
+    }
+
+  % The basic ADVMOD or DET dependency targeting the relative pronoun moves to the antecedent and its label becomes NMOD.
+  %Ex: dev-andelvte071-s3 - Bratrancova rodina byla jedna z těch rodin[ANT], o jejichž[DET] štěstí[H] je lépe nehovořit,
+    rule move_basic_advmod-det_nmod{
+      pattern{ANT -[E:ref]-> PRO; e: H-[advmod|det]-> PRO;H[Dupos=NOUN|PRON|PROPN|X]}
+      without{ H -> ANT}
+      commands{add_edge H -[E:nmod]-> ANT}
+    }
+
+  % The enhanced ADVMOD dependency targeting the relative pronoun moves to the antecedent and its label becomes NMOD.
+    rule move_enhanced_advmod_nmod{
+      pattern{ANT -[E:ref]-> PRO; e: H-[E:advmod]-> PRO;H[Dupos=NOUN|PRON|PROPN|X]}
+      without{ H -> ANT}
+      commands{add_edge H -[E:nmod]-> ANT; del_edge e}
+    }
+
+}
+
+% =============================================================================================
+% Creation of deep subject relations allowed by the UD guidelines.
+package deep_subj_ud{
+
+  % if a predicate DPRED in the active voice is a XCOMP dependent of another predicate PRED without a nominal object, its deep active subject is the clausal subject SUBJ of PRED.
+  %Ex: UD _Sequoia frwiki_50.1000_00379 - il était apparu[PRED] utile[DPRED] d'"utiliser[SUBJ] les relations que le groupe Elf avait en Chine"
+    rule xcomp_csubj{
+      pattern{
+        PRED -[1=xcomp]-> DPRED;
+        %DPRED[upos=ADJ|VERB];
+        PRED -[1=csubj]-> SUBJ}
+      without{DPRED[DVerbForm=Part, DTense=Past]}
+      without{DPRED -[aux:pass]-> *}
+      without{ DPRED -[1=expl,2=pass]-> PRO} % DPRED is not in the mediopassive voice.
+      without{PRED -[obj]-> *}
+      without{DPRED[NullSubject=Yes]}
+      without{DPRED -[1=csubj|nsubj]-> *}
+      commands{add_edge DPRED -[E:csubj]-> SUBJ}
+    }
+
+  % if a predicate DPRED in the active voice is a XCOMP dependent of another predicate PRED without a nominal object, its deep active subject is the nominal subject SUBJ of PRED.
+  %Ex: UD_French-GSD fr-ud-train_05575 - On[SUBJ] aime[PRED] y flâner[DPRED].
+  %Ex:  UD_French-GSD fr-ud-dev_01286 - La réponse[SUBJ] semble[PRED] être oui[DPRED].
+    rule xcomp_nsubj{
+      pattern{
+        PRED -[1=xcomp]-> DPRED;
+        %DPRED[upos=ADJ|ADV|VERB];
+        e:PRED -[1=csubj|nsubj]-> SUBJ}
+      without{ * -[E:ref]-> SUBJ}% When a relative pronoun is subject, its antecedent is assigned the function of enhanced subject
+      without{DPRED[DVerbForm=Part, DTense=Past]}
+      without{DPRED -[aux:pass]-> *}
+      without{ DPRED -[1=expl,2=pass]-> PRO} % DPRED is not in the mediopassive voice.
+      without{PRED -[obj]-> *}
+      without{DPRED[NullSubject=Yes]}
+      without{DPRED -[1=csubj|nsubj]-> *}
+      commands{add_edge f:DPRED -> SUBJ; f.1=e.1; f.enhanced=yes}
+    }
+
+  % if a predicate DPRED in the passive voice is a XCOMP dependent of another predicate PRED without a nominal object, its deep passive subject is the subject SUBJ of PRED.
+  % Ex: UD_English-PUD - more[SUBJ] needs[PRED] to be done[DPRED] to protect consumers and punish agents found to have engaged in unethical behaviour.
+    rule xcomp_nsubj-pass{
+      pattern{
+        PRED -[1=xcomp]-> DPRED;
+        PRED -[1=nsubj]-> SUBJ;
+        DPRED -[aux:pass]-> *}
+      without{ * -[E:ref]-> SUBJ}% When a relative pronoun is subject, its antecedent is assigned the function of enhanced subject
+      without{DPRED[NullSubject=Yes]}
+      without{DPRED -[1=csubj|nsubj]-> *}
+      commands{add_edge DPRED -[E:nsubj:pass]-> SUBJ}
+    }
+    
+  % if a verb DPRED in the mediopassive voice (expressed with a refexive pronoun) is a XCOMP dependent of a predicate PRED, its deep passive subject is the subject SUBJ of PRED.
+  %Ex: UD_Sequoia Europar.550_00006 - Je le remercie également pour la collaboration qui a pu[PRED] s'[PRO]établir[DPRED° entre les groupes...
+    rule xcomp_nsubj_medpassive{
+      pattern{
+        PRED -[1=xcomp]-> DPRED; DPRED[upos=VERB];
+        PRED -[1=nsubj]-> SUBJ;
+        DPRED -[1=expl,2=pass]-> PRO}
+      without{ * -[E:ref]-> SUBJ}% When a relative pronoun is subject, its antecedent is assigned the function of enhanced subject
+      without{DPRED[DVerbForm=Part, DTense=Past]}
+      without{PRED -[obj]-> *}
+      without{DPRED[NullSubject=Yes]}
+      without{DPRED -[1=csubj|nsubj]-> *}
+      commands{add_edge DPRED -[E:nsubj:pass]-> SUBJ}
+    }
+
+  % if a past participle DPRED is a XCOMP dependent of another predicate PRED without a nominal object, its deep passive subject is the subject SUBJ of PRED.
+  %Ex: UD_French-GSD fr-ud-train_02927 - À cause de cela, son avenir[SUBJ] semble[PRED] compromis[DPRED] à Bruxelles.
+    rule xcomp_nsubj_past-part{
+      pattern{
+        PRED -[1=xcomp]-> DPRED; DPRED[upos=VERB,Voice=Pass];
+        PRED -[1=nsubj]-> SUBJ}
+      without{ * -[E:ref]-> SUBJ}% When a relative pronoun is subject, its antecedent is assigned the function of enhanced subject
+      without{DPRED[NullSubject=Yes]}
+      without{PRED -[obj]-> *}
+      without{DPRED -[1=csubj|nsubj]-> *}
+      commands{add_edge DPRED -[E:nsubj:pass]-> SUBJ}
+    }
+
+  % if the gouvernor of copula is a XCOMP dependent of a predicate PRED , it is supposed to have a deep passive subject, which is the subject SUBJ of PRED.
+  %Ex: UD_English-EWT reviews-049766-0010 - I hope to be back !
+    rule xcomp_nsubj_cop{
+      pattern{
+        PRED -[1=xcomp]-> DPRED; DPRED -[cop]-> *;
+        PRED -[1=nsubj]-> SUBJ}
+      without{ * -[E:ref]-> SUBJ}% When a relative pronoun is subject, its antecedent is assigned the function of enhanced subject
+      without{DPRED[NullSubject=Yes]}
+      without{DPRED -[1=csubj|nsubj]-> *}
+      commands{add_edge DPRED -[E:nsubj]-> SUBJ}
+    }
+
+  % if a predicate DPRED is a XCOMP dependent of another predicate PRED with a nominal object OBJ, OBJ is the subject of DPRED.
+  %Ex: UD_French-GSD fr-ud-train_12228 - Je trouve[PRED] cette attitude[OBJ] totalement inadmissible[DPRED] !
+    rule xcomp_obj{
+      pattern{
+        PRED -[1=xcomp]-> DPRED;
+        PRED -[1=obj]-> OBJ}
+      without{ * -[E:ref]-> OBJ}% When a relative pronoun is object, its antecedent is assigned the function of enhanced subject
+      without{DPRED -[aux:pass]-> *}
+      without{PRED -[obj:lvc]-> OBJ}
+      without{DPRED[Dupos=VERB,DVerbForm=Part,DTense=Past]}
+      without{DPRED[NullSubject=Yes]}
+      without{DPRED -[1=csubj|nsubj]-> *}
+      commands{add_edge DPRED -[E:nsubj]-> OBJ}
+    }
+
+  % if a predicate DPRED with a passive auxiliary is a XCOMP dependent of another predicate PRED with a nominal object OBJ, OBJ is the passive subject of DPRED.
+  %Ex: UD_English-PUD n03002010 - On the other hand, Ms. Clinton's relations with the continent over the past twenty years leave[PRED] much[OBJ] to be desired[DPRED].
+    rule xcomp_obj_aux-pass{
+      pattern{
+        PRED -[1=xcomp]-> DPRED;
+        PRED -[1=obj]-> OBJ;
+        DPRED -[aux:pass]-> *}
+      without{ * -[E:ref]-> OBJ}% When a relative pronoun is object, its antecedent is assigned the function of enhanced subject
+      without{DPRED[NullSubject=Yes]}
+      without{DPRED -[1=csubj|nsubj]-> *}
+      commands{add_edge DPRED -[E:nsubj:pass]-> OBJ}
+    }
+
+  % if a predicate DPRED, which is a past participle, is a XCOMP dependent of another predicate PRED with a nominal object OBJ, OBJ is the passive subject of PRED.
+  %Ex: UD_French-GSD fr-ud-train_00581 - Pour autant les différents partis composant la majorité de gauche voient[PRED] leur poids[OBJ] modifié[DPRED].
+    rule xcomp_obj_past-part{
+      pattern{
+        DPRED[Voice=Pass];
+        PRED -[1=xcomp]-> DPRED;
+        PRED -[1=obj]-> OBJ}
+      without{ * -[E:ref]-> OBJ}% When a relative pronoun is object, its antecedent is assigned the function of enhanced subject
+      without{DPRED[NullSubject=Yes]}
+      without{DPRED -[1=csubj|nsubj]-> *}
+      commands{add_edge DPRED -[E:nsubj:pass]-> OBJ}
+    }
+
+  % if a predicate DPRED is a XCOMP dependent of the object OBJ of a light verb V, its deep subject is the subject SUBJ of V.
+    rule xcomp_lvc1{
+      pattern{
+        V[Dupos=VERB]; V -[obj:lvc]-> OBJ;
+        DPRED[Dupos<>PRON|PROPN|X];
+        OBJ -[1=xcomp]-> DPRED;
+        V -[1=nsubj]-> SUBJ}
+      without{DPRED[NullSubject=Yes]}
+      without{DPRED -[1=csubj|nsubj|det]-> *}
+      commands{add_edge DPRED -[E:nsubj]-> SUBJ}
+    }
+
+  % if a predicate DPRED is a XCOMP dependent of a light verb V, its deep subject is the subject SUBJ of V.
+  %Ex: UD_French-GSD fr-ud-train_00259 - le tireur doit prendre[PRED] garde[OBJ] à ne pas toucher[DPRED] la veste
+    rule xcomp_lvc2{
+      pattern{
+        V[Dupos=VERB]; V -[obj:lvc]-> OBJ;
+        DPRED[Dupos<>PRON|PROPN|X];
+        V -[1=xcomp]-> DPRED;
+        V -[1=nsubj]-> SUBJ}
+      without{DPRED[NullSubject=Yes]}
+      without{DPRED -[1=csubj|nsubj|det]-> *}
+      commands{add_edge DPRED -[E:nsubj]-> SUBJ}
+    }
+
+}
+
+% =============================================================================================
+% Propagation of dependencies targeting a coordination on all its conjuncts.
+% The syntax of rule names is the following: "gov[_{dependency to the first conjunct CONJ1} _{dependency to the second conjunct CONJ2}]
+package coord_gov{
+  %The general case.
+  rule gov{
+    pattern{
+      CONJ1 -[1=conj]-> CONJ2;
+      e:H -[1 <> acl|advcl|advmod|amod|nmod|nummod|obl|conj|punct|root]-> CONJ1 % Modifiers has a specific treatment.
+      }
+    without{H[Dupos=ADJ]; H -[E:nsubj]-> CONJ1; H << CONJ1}% H is an adjective that is left attributive of CONJ1, but not of the coordination.
+    without{ CONJ1 << H; H << CONJ2}
+    without{H -> CONJ2}
+    commands{add_edge f:H -> CONJ2; f.label=e.label; f.enhanced=yes; }
+  }
+
+  % ===================================================
+  % Propagation of noun modifiers
+  % The governor H of the coordination is a nominal and the second conjunct has a verbal form.
+  %Ex:  UD_English-EWT email-enronsent23_08-0006 -  Work it into your speech-- something along the line[H] of, "And Jen, you come[CONJ1] from great people and have[CONJ2] fantastic friends. 
+  rule gov_mod-noun_acl{
+    pattern{
+      CONJ1 -[1=conj]-> CONJ2;
+      H -[1=acl|advmod|amod|nmod]-> CONJ1;
+      CONJ2[DVerbForm]}
+    without{H[upos <> NOUN|NUM|PRON|PROPN|X]; H -[advmod]-> CONJ1} % ADVMOD does not always have a nominal governor.
+    without{H -[acl:relcl]-> CONJ1}
+    without{ CONJ1 << H; H << CONJ2}
+    without{H -> CONJ2}
+    commands{add_edge H -[E:acl]-> CONJ2}
+  }
+
+  % The governor H of the coordination is a nominal, the first conjunct is a finite but not relative clause.
+  %Ex: answers-20111107115952AAqfsHV_ans-0003 - i'm doing a report[H] on how afghanistan and Vietam are different[CONJ1] and alike[CONJ2].
+  rule gov_acl_acl{
+    pattern{
+      CONJ1 -[1=conj]-> CONJ2;
+      H -[1=acl]-> CONJ1;
+      CONJ1[DVerbForm=Fin]}
+    without{H[upos <> NOUN|NUM|PRON|PROPN|X]; H -[advmod]-> CONJ1}% ADVMOD does not always have a nominal governor.
+    without{H -[acl:relcl]-> CONJ1}
+    without{ CONJ1 << H; H << CONJ2}
+    without{H -> CONJ2}
+    commands{add_edge H -[E:acl]-> CONJ2}
+  }
+
+
+  % The governor H of the coordination is a nominal and it is the antecedent of a relative pronounbelonging to the second conjunct. The first conjunct is not a relative clause.
+  rule gov_mod-noun_acl-relcl{
+    pattern{
+      CONJ1 -[1=conj]-> CONJ2;
+      H -[1=acl|advmod|amod|nmod]-> CONJ1;
+      H -[E:ref]-> PRO; CONJ1 << PRO; PRO << CONJ2} 
+    without{H[upos <> NOUN|NUM|PRON|PROPN|X]; H -[advmod]-> CONJ1}% ADVMOD does not always have a nominal governor.
+    without{H -[acl:relcl]-> CONJ1}
+    without{H -> CONJ2}
+    without{ CONJ1 << H; H << CONJ2}
+    commands{add_edge H -[E:acl:relcl]-> CONJ2}
+  }
+
+  % The first conjunct of the coordination is a relative clause.
+  %Ex: UD_English-EWT answers-20111108072912AAccket_ans-0011 - This is where you can get[CONJ1] AND change[CONJ2] express train tickets.
+  %Ex: UD_English-EWT reviews-122882-0006 - $80 for a dish that has[CONJ1] about one small lobster tail and is full[CONJ2] of filler vegetables!
+  %Ex: UD_Sequoia Europar.550_00006 - des compromis[H], qui sont, selon moi, responsables[CONJ1], adéquats[CONJ2] et appropriés.
+  rule gov_acl-relcl_acl-relcl{
+    pattern{
+      CONJ1 -[1=conj]-> CONJ2;
+      H -[acl:relcl]-> CONJ1}
+    without{H -> CONJ2}
+    without{ CONJ1 << H; H << CONJ2}
+    commands{add_edge H -[E:acl:relcl]-> CONJ2}
+  }
+
+
+  %The governor H of the coordination is a nominal, the first conjunct is not a relative or finite clause and the second conjunct is an adjective.
+  rule gov_mod-noun_amod{
+    pattern{
+      CONJ1 -[1=conj]-> CONJ2;
+      H -[1=acl|advmod|amod|nmod|nummod]-> CONJ1;
+      CONJ2[Dupos=ADJ]}
+    without{H[upos <> NOUN|NUM|PRON|PROPN|X]; H -[advmod]-> CONJ1}% ADVMOD does not always have a nominal governor.
+    without{H -[acl:relcl]-> CONJ1}
+    without{H -[1=acl]-> CONJ1; CONJ1[DVerbForm=Fin]}
+    without{CONJ2[DVerbForm=Fin]}
+    without{ CONJ1 << H; H << CONJ2}
+    without{H -> CONJ2}
+    commands{add_edge H -[E:amod]-> CONJ2}
+  }
+  
+  %The governor H of the coordination is a nominal, the first conjunct is not a relative or finite clause and the second conjunct is an adverb.
+  rule gov_mod-noun_advmod{
+    pattern{
+      CONJ1 -[1=conj]-> CONJ2;
+      H -[1=acl|advmod|amod|nmod|nummod]-> CONJ1;
+      CONJ2[Dupos=ADV]}
+    without{H[upos <> NOUN|NUM|PRON|PROPN|X]; H -[advmod]-> CONJ1}% ADVMOD does not always have a nominal governor.
+    without{H -[acl:relcl]-> CONJ1}
+    without{H -[1=acl]-> CONJ1; CONJ1[DVerbForm=Fin]}
+    without{CONJ2[DVerbForm=Fin]}
+    without{ CONJ1 << H; H << CONJ2}
+    without{H -> CONJ2}
+    commands{add_edge H -[E:advmod]-> CONJ2}
+  }
+
+  %The governor H of the coordination is a nominal, the first conjunct is not a relative or finite clause and the second conjunct is a nominal.
+  rule gov_mod-noun_nmod{
+    pattern{
+      CONJ1 -[1=conj]-> CONJ2;
+      H -[1=acl|advmod|amod|nmod]-> CONJ1;
+      CONJ2[Dupos=NOUN|NUM|PRON|PROPN|SYM|X, !DVerbForm]}
+    without{H[upos <> NOUN|NUM|PRON|PROPN|X]; H -[advmod]-> CONJ1}% ADVMOD does not always have a nominal governor.
+    without{H -[acl:relcl]-> CONJ1}
+    without{H -[1=acl]-> CONJ1; CONJ1[DVerbForm=Fin]}
+    without{CONJ2[DVerbForm=Fin]}
+    without{ CONJ1 << H; H << CONJ2}
+    without{H -> CONJ2}
+    commands{add_edge H -[E:nmod]-> CONJ2}
+  }
+
+  %The governor H of the coordination is a nominal, the first conjunct is not a relative or finite clause and the second conjunct is a numeral.
+  rule gov_mod-noun_nummod{
+    pattern{
+      CONJ1 -[1=conj]-> CONJ2;
+      H -[1=advmod|amod|nmod|nummod]-> CONJ1;
+      CONJ2[Dupos=NUM]; CONJ2 << H}
+    without{H[upos <> NOUN|NUM|PRON|PROPN|X]; H -[advmod]-> CONJ1}% ADVMOD does not always have a nominal governor.
+    without{ CONJ1 << H; H << CONJ2}
+    without{H -> CONJ2}
+    commands{add_edge H -[E:nummod]-> CONJ2}
+  }
+
+  % ===================================================
+  % Propagation of predicate modifiers
+  %The governor H of the coordination is a predicate and the second conjunct is a clause.
+  rule gov_mod-pred_advcl{
+    pattern{
+      CONJ1 -[1=conj]-> CONJ2;
+      H -[advcl|advcl:x|advmod|obl|obl:mod]-> CONJ1;
+      CONJ2[DVerbForm=Conv|Fin|Ger|Part]}
+    without{H -[advmod]-> CONJ1; H[Dupos=NOUN|NUM|PRON|PROPN|X]}% ADVMOD does not always have a predicative governor.
+    without{ CONJ1 << H; H << CONJ2}
+    without{H -> CONJ2}
+    commands{add_edge H -[E:advcl]-> CONJ2}
+  }
+
+  %The governor H of the coordination is a predicate and the first conjunct is an adverbial clause.
+  rule gov_advcl_advcl{
+    pattern{
+      CONJ1 -[1=conj]-> CONJ2;
+      H -[1=advcl]-> CONJ1;
+      CONJ1 -[mark]-> *}
+    without{CONJ2 -[case]-> *}
+    without{ CONJ1 << H; H << CONJ2}
+    without{H -> CONJ2}
+    commands{add_edge H -[E:advcl]-> CONJ2}
+  }
+
+  %The governor H of the coordination is a predicate and the second conjunct is an adjective.
+  %Ex: dev-618 - Modli się, poważny[CONJ1] i skupiony[CONJ2].
+  rule gov_mod-pred_advcl_adj{
+    pattern{
+      CONJ1 -[1=conj]-> CONJ2;
+      H -[advcl|advcl:x|advmod|obl|obl:mod]-> CONJ1;
+      CONJ2[Dupos=ADJ]}
+    without{H -[advmod]-> CONJ1; H[Dupos=NOUN|NUM|PRON|PROPN|X]}% ADVMOD does not always have a predicative governor.
+    without{ CONJ1 << H; H << CONJ2}
+    without{H -> CONJ2}
+    commands{add_edge H -[E:advcl]-> CONJ2}
+  }
+
+
+  %The governor H of the coordination is a predicate and the second conjunct is an adverb.
+  %Ex: UD_English-EWT email-enronsent28_02-0024 - they should print[H] clearly from Adobe Acrobat Reader[CONJ1] 3.0 or higher[CONJ2].
+  rule gov_mod-pred_advmod{
+    pattern{
+      CONJ1 -[1=conj]-> CONJ2;
+      H -[advcl|advcl:x|advmod|obl|obl:mod]-> CONJ1;
+      CONJ2[Dupos=ADV]}
+    without{H -[advmod]-> CONJ1; H[Dupos=NOUN|NUM|PRON|PROPN|X]}% ADVMOD does not always have a predicative governor.
+    without{H -> CONJ2}
+    without{ CONJ1 << H; H << CONJ2}
+    commands{add_edge H -[E:advmod]-> CONJ2}
+  }
+
+  % The governor H of the coordination is a predicate, the first conjunct is an adverb modifier of H and the second conjunct is a nominal.
+  rule gov_advmod_obl{
+    pattern{
+      CONJ1 -[1=conj]-> CONJ2;
+      H -[1=advmod]-> CONJ1;
+      CONJ2[Dupos=ADJ|NOUN|NUM|PRON|PROPN|X]}
+    without{H[Dupos=NOUN|NUM|PRON|PROPN|X]}
+    without{CONJ2 -[mark]-> *}
+    without{CONJ2[DVerbForm]}
+    without{ CONJ1 << H; H << CONJ2}
+    without{H -> CONJ2}
+    commands{add_edge H -[E:obl]-> CONJ2}
+  }
+
+  % The governor H of the coordination is a predicate, the first conjunct is an adverbial clause modifier of H and the second conjunct is a nominal.
+  rule gov_advcl_obl{
+    pattern{
+      CONJ1 -[1=conj]-> CONJ2;
+      H -[1=advcl]-> CONJ1;
+      CONJ2[Dupos=NOUN|NUM|PRON|PROPN|X]}
+    without{CONJ2 -[mark]-> *}
+    without{CONJ2[DVerbForm]}
+    without{ CONJ1 << H; H << CONJ2}
+    without{H -> CONJ2}
+    commands{add_edge H -[E:obl]-> CONJ2}
+  }
+
+  % The governor H of the coordination is a predicate, the first conjunct is an oblique complement of H and the second conjunct is a nominal.
+  %Ex: answers-20111108084227AAtbjAp_ans-0001 - it failed[H] a test due to lost[CONJ1] or stolen[CONJ2] ...
+  rule gov_obl_obl{
+    pattern{
+      CONJ1 -[1=conj]-> CONJ2;
+      e:H -[1=obl]-> CONJ1;
+      CONJ2[Dupos <> ADV]}
+    without{CONJ2 -[mark]-> *}
+    without{CONJ2[DVerbForm <> Conv|Part]}
+    without{ CONJ1 << H; H << CONJ2}
+    without{H -> CONJ2}
+    commands{add_edge f: H -> CONJ2; f.label =e.label; f.enhanced=yes}
+  }
+}
+
+% =============================================================================================
+% For null subject languages, mark the verbs without explicit subject.
+package null_subject{
+  rule mark_null_subject{
+    pattern{V[DVerbForm=Fin, Person=1|2, !NullSubject]}
+    without{ V -[1=csubj|nsubj]-> *}
+    commands{V.NullSubject=Yes}
+  }
+  
+  rule mark_null_subject_quasi-verb{
+    pattern{V[VerbType=Quasi, !NullSubject]}
+    without{ V -[1=csubj|nsubj]-> *}
+    commands{V.NullSubject=Yes}
+  }
+
+}
+
+% =============================================================================================
+% Propagation of left-hand outgoing dependencies of a coordination to all conjuncts. There is an ambiguity because they can depend on the coordination or only on its left conjunct.
+
+package coord_dep_left_pck{
+  % ELVIS: Criei essa, copiando a de baixo, para propagar nsubj de coordenada se esse sujeito não for dependente de relação "ref" (o próprio pronome relativo) e não o dependente de coordenada já não tiver sujeito.
+    rule coord_dep_left_nsubj-pass{
+    pattern{
+      CONJ2 [Voice=Pass];
+      CONJ1 -[1=conj]-> CONJ2;
+      e:CONJ1 -[1=nsubj]-> D;
+      D << CONJ1}
+    without{CONJ2 -> D}
+    without{CONJ2 -[1=nsubj]-> *}
+    without{* -[1=ref]-> D}
+    without{CONJ2 -[orphan]-> *} % ELVIS: Adicionei, para não propagar dependentes de conj caso esse conj seja head de orphan
+    commands{add_edge f:CONJ2 -> D; f.label = "nsubj:pass"; f.enhanced=yes}
+    }
+
+    rule coord_dep_left_nsubj{
+    pattern{
+      CONJ2 [!Voice];
+      CONJ1 -[1=conj]-> CONJ2;
+      e:CONJ1 -[1=nsubj]-> D;
+      D << CONJ1}
+    without{CONJ2 -> D}
+    without{CONJ2 -[1=nsubj]-> *}
+    without{* -[1=ref]-> D}
+    without{CONJ2 -[orphan]-> *} % ELVIS: Adicionei, para não propagar dependentes de conj caso esse conj seja head de orphan
+    commands{add_edge f:CONJ2 -> D; f.label = "nsubj"; f.enhanced=yes}
+    }
+
+    rule coord_dep_left{
+    pattern{
+      CONJ1 -[1=conj]-> CONJ2;
+      e:CONJ1 -[1=advcl|discourse|parataxis|vocative]-> D;
+      D << CONJ1}
+    without{CONJ2 -> D}
+    without{CONJ2 -[orphan]-> *} % ELVIS: Adicionei, para não propagar dependentes de conj caso esse conj seja head de orphan
+    commands{add_edge f:CONJ2 -> D; f.label = e.label; f.enhanced=yes}
+    }
+
+
+  % =============================================================================================
+  % Propagation of left-hand outgoing AUX dependencies of a coordination to all conjuncts.
+    rule coord_dep_left_aux{
+      pattern{
+        CONJ1[VerbForm]; CONJ2[VerbForm];
+        CONJ1.VerbForm = CONJ2.VerbForm;
+        CONJ1 -[1=conj]-> CONJ2;
+        e:CONJ1 -[1=aux]-> D; D << CONJ1}
+      without{ CONJ2 -[aux|E:aux]-> *}
+      without{CONJ2[DVerbForm=Fin]}
+      without{CONJ2 -[1=aux]-> *}
+      commands{ add_edge f: CONJ2 -> D; f.label = e.label; f.enhanced=yes}
+    }
+
+  % =============================================================================================
+  % Propagation of left-hand outgoing  COP dependencies of a coordination to all conjuncts.
+    rule coord_dep_left_cop{
+      pattern{CONJ1 -[1=conj]-> CONJ2;CONJ1 -[cop]-> D; D[VerbForm]; D << CONJ1}
+      without{ CONJ2 -[cop|E:cop]-> *}
+      without{CONJ2[DVerbForm=Fin|Inf]}
+      without{CONJ2 -[1=aux|cop]-> *}
+      commands{ add_edge CONJ2 -[E:cop]-> D; CONJ2.DVerbForm = D.VerbForm}
+    }
+
+  % =============================================================================================
+  % Propagation of left-hand outgoing CASE dependencies of a coordination to all conjuncts.
+  % CASE dependencies are not propagated in: Italian.
+  % They are propagated in: Polish (Part1 +3) 
+    rule coord_dep_left_case{
+      pattern{
+        CONJ1 -[1=conj]-> CONJ2;
+        e:CONJ1 -[case]-> D; D << CONJ1;
+        CONJ2[Dupos=NOUN|NUM|PRON|PROPN|X]}
+      without{ CONJ2 -[case|E:case]-> *}
+      commands{ add_edge CONJ2 -[E:case]-> D}
+    }
+
+  % =============================================================================================
+  % Propagation of left-hand outgoing MARK dependencies of a coordination to all conjuncts.
+    rule coord_dep_left_mark{
+      pattern{
+        CONJ1 -[1=conj]-> CONJ2;
+        e:CONJ1 -[mark]-> D; D << CONJ1;
+        CONJ2[DVerbForm]}
+      without{ CONJ2 -[mark|E:mark]-> *}
+      commands{ add_edge CONJ2 -[E:mark]-> D}
+    }
+} 
+
+package coord_dep_right_pck{
+  % =============================================================================================
+  % Right-hand outgoing dependents
+    rule coord_dep_right{
+      pattern{
+        CONJ1 -[1=conj]-> CONJ2;
+        e:CONJ1 -[1<> aux|conj|cop|punct]-> D;
+        CONJ2 << D}
+      without{CONJ1 -[1=nsubj,enhanced=yes]-> D; CONJ2[Dupos=NOUN]}
+      %without{CONJ1 -[1=acl|advmod|amod|appos|nmod|obl|parataxis]-> D} % Dependencies that are not propagated for English corpora.
+      without{CONJ1 -[1=parataxis]-> D} % Dependencies that are not propagated for French corpora.
+      without{ CONJ2 -> D}
+      commands{add_edge f:CONJ2 -> D; f.label = e.label; f.enhanced=yes}
+    }
+}
+
+% =============================================================================================
+% Determination of the form of multiword adpositions and conjunctions.
+% Contrary to the guidelines, I consider that the coordinating conjunctions rise on the higher relations.
+package case_mwe{
+  %Ex: reviews-266676-0002 - The Power We Are Putting Back In[MWE] To The Grid[H] Is Great
+  rule init_mwe_form{
+    pattern{
+      H -[1=case|cc|mark]-> MWE;
+      MWE -[fixed|goeswith]-> D}
+    without{ H -[1=case|cc|mark]-> D1; D1 << MWE}
+    without{ MWE -[fixed|goeswith]-> D1; D1 << D}
+    without{MWE[ExtForm]}
+    commands{MWE.ExtForm=MWE.wordform + "_" + D.wordform; add_edge MWE -[MWE]-> D}
+  }
+
+  rule propagate_mwe_form{
+    pattern{
+      e:MWE -[MWE]-> D;
+      MWE -[fixed|goeswith]-> D1; D << D1}
+    without{MWE -[fixed|goeswith]-> D2; D << D2; D2 << D1}
+    commands{
+      del_edge e; add_edge MWE -[MWE]-> D1;
+      MWE.ExtForm = MWE.ExtForm + "_" + D1.wordform}
+  }
+
+  rule close_mwe_form{
+    pattern{e:MWE -[MWE]-> D}
+    without{ MWE -[fixed|goeswith]-> D1; D << D1}
+    commands{del_edge e}
+  }
+}
+
+% =============================================================================================
+% Marking every governor of adpositions and conjunctions with a Mark feature. The value of this feature is the concatenation of forms of all the adpositions and conjunctions of subordination that depend on this governor.
+package case_mark{
+  rule init_concat{
+    pattern{H -[1=case|mark]-> D; D[Dupos <> PUNCT]} 
+    without{H -[1=case|mark]-> D1; D1 << D}
+    without{H1 -[1=conj]-> H; H1 -[1=mark]-> *}
+    without{H[Mark]}
+    without{D[upos=SYM]}
+    without{D[lemma="'"|"'s"|"’s"]} % Possession mark in English
+    without{D[lemma="°"]} % Specific symbols
+    without{D[ExtForm]}
+    commands{H.Mark= D.lemma; add_edge H -[MARK]-> D} % 
+  }
+
+  rule init_concat_extform{
+    pattern{H -[1=case|mark]-> D; D[ExtForm]}
+    without{H -[1=case|mark]-> D1; D1 << D}
+    without{H[Mark]}  
+    commands{H.Mark= D.ExtForm; add_edge H -[MARK]-> D}
+  }
+  
+  rule propagate_concat{
+    pattern{
+      e:H -[MARK]-> D;
+      H -[1=case|mark]-> D1; D < D1}
+    without{D1[ExtForm]}
+    without{D1[upos=SYM]}
+    without{D1[lemma="'"|"'s"|"’s"]} % Possession mark in English
+    without{D[lemma="°"]} % Specific symbols
+    commands{
+      del_edge e; add_edge H -[MARK]-> D1;
+      H.Mark = H.Mark + "_" + D1.lemma}
+  }
+
+  rule propagate_concat_extform{
+    pattern{
+      e:H -[MARK]-> D;
+      H -[1=case|mark]-> D1; D < D1; D1[ExtForm]}
+    commands{
+      del_edge e; add_edge H -[MARK]-> D1;
+      H.Mark = H.Mark + "_" + D1.ExtForm}
+  }
+  
+  rule close_concat{
+    pattern{e:H -[MARK]-> D}
+    without{ H -[1=case|mark]-> D1; D < D1;D1[lemma<>"'"|"'s"|"’s"|"°"] }
+    commands{del_edge e}
+  }
+
+  % In a coordination, the first conjunct has a case dependent but the second one has no case or mark dependent.
+  %Ex: email-enronsent26_02-0015 - for the person or entity to which it is addressed and may contain confidential and/or privileged material.
+  rule conj_case{
+    pattern{
+      CONJ1 -[1=conj]-> CONJ2;
+      CONJ1 -[1=case]-> *;
+      CONJ1[Mark]}
+    without{CONJ1 -[MARK]-> *}% The Mark feature of CONJ1 must be complete. %Ex: newsgroup-groups.google.com_citiesguide_c6edd53b8aaceb4c_ENG_20051102_022300-0006 - they tie up with some of the airlines for a certain period based on the discount[CONJ1] and services[CONJ2]
+    without{CONJ2 -[1=case|mark]-> *}
+    without{CONJ2[Mark]}
+    commands{CONJ2.Mark=CONJ1.Mark}
+  }
+
+  % In a coordination, the first conjunct has a mark dependent but the second one has mark dependent.
+  rule conj_mark{
+    pattern{
+      CONJ1 -[1=conj]-> CONJ2;
+      CONJ1 -[1=mark]-> *;
+      CONJ1[Mark]; CONJ2[!Mark]}
+    without{CONJ2 -[1=case|mark]-> *}
+    without{CONJ2[Mark]}
+    commands{CONJ2.Mark=CONJ1.Mark}
+  }
+}
+
+% =============================================================================================
+% Addition of preposition and subordinating conjunction names to the relations targeting their governor, when the governor is a modifier (with the exception of a relative clause).
+package case_info{
+
+  % The label of the augmented dependency has no extension and the dependency is a basic relation.
+  rule add_case_name1{
+    pattern{e: H -[1 = acl|advcl|nmod|obl|xcomp|ccomp|csubj|advmod, !2]-> D; D[Mark]}
+    without{D -[E:ref]-> PRO; H -> PRO}% The relation e is not a relation targeting a relative pronoun, which has moved to the antecedent.
+    without{H -[enhanced=yes]-> D}
+    without{* -[E:ref]-> D}
+    commands{add_edge f:H -> D; f.enhanced=yes; f.1 = e.1; f.2 = D.Mark; }
+  }
+
+  % The label of the augmented dependency has no extension and the dependency is a enhanced dependency.
+  rule add_case_name1_enhanced{
+    pattern{e: H -[1 = acl|advcl|nmod|obl|xcomp|ccomp|csubj|advmod, !2, enhanced=yes]-> D; D[Mark]}
+     without{D -[E:ref]-> PRO; H -> PRO}% The relation e is not a relation targeting a relative pronoun, which has moved to the antecedent.
+    without{D[PronType=Rel|"Int,Rel"]}
+    commands{e.2 = D.Mark}
+  }
+
+  % The label of the augmented dependency has no extension and the dependency is a enhanced dependency from a relative clause to the antecedent of the relative pronoun.
+  %Ex: email-enronsent05_01-0005 - The premise[H] with which[PRO] the administartion is acting[D] 
+  rule add_case_name1_enhanced_ant{
+    pattern{
+      e: H -[1 = acl|advcl|nmod|obl|xcomp|ccomp|csubj|advmod, !2, enhanced=yes]-> D;
+      H -> PRO;
+      D -[E:ref]-> PRO; PRO[Mark]}
+    commands{e.2 = PRO.Mark}
+  }
+
+  % The label of the augmented relation has an extension.
+  rule add_case_name2{
+    pattern{e: H -[1 = acl|advcl|nmod|obl|xcomp|ccomp|csubj|advmod, 2=*,!3]-> D; D[Mark]}
+    without{D -[E:ref]-> PRO; H -> PRO}% The relation e is not a relation targeting a relative pronoun, which has moved to the antecedent.
+    without{e.2 = D.Mark}
+    without{e.1=obl;e.2=agent}% Done in most treebanks but questionable
+    without{e.1=acl; e.2=relcl}
+    without{ H -[enhanced=yes]-> D}
+    without{* -[E:ref]-> D}
+    commands{add_edge f:H -> D; f.enhanced=yes; f.1 = e.1; f.2=e.2; f.3 = D.Mark; }
+  }
+
+  % The label of the augmented dependency has no extension and the dependency is a enhanced dependency.
+  rule add_case_name2_enhanced{
+    pattern{e: H -[1 = acl|advcl|nmod|obl|xcomp|ccomp|csubj|advmod, 2=*, !3, enhanced=yes]-> D; D[Mark]}
+    without{D -[E:ref]-> PRO; H -> PRO}% The relation e is not a relation targeting a relative pronoun, which has moved to the antecedent.
+    without{e.1=obl;e.2=agent}% Done in most treebanks but questionable
+    without{* -[E:ref]-> D}
+    without{e.2 = D.Mark}
+    commands{e.3 = D.Mark}
+  }
+
+  % The label of the augmented dependency has an extension and the dependency is a enhanced dependency from a relative clause to the antecedent of the relative pronoun.
+  %Ex: email-enronsent05_01-0005 - The premise[H] with which[PRO] the administartion is acting[D] 
+  rule add_case_name2_enhanced_ant{
+    pattern{
+      e: H -[1 = acl|advcl|nmod|obl|xcomp|ccomp|csubj|advmod, 2=*, !3, enhanced=yes]-> D; H -> PRO;
+      D -[E:ref]-> PRO; PRO[Mark]}
+    without{e.1=obl;e.2=agent}% Done in most treebanks but questionable
+    without{e.2 = PRO.Mark}
+    commands{e.3 = PRO.Mark}
+  }
+
+  % The relation targets the second conjunct of a coordination but the mark to augment its label is attached to the first conjunct. The label of the relation has no extension.
+  rule add_case_name1_conj{
+    pattern{
+      CONJ1 -[1=conj]-> CONJ2;
+      H -[1 = acl|advcl|nmod|obl|xcomp|ccomp|csubj|advmod]-> CONJ1; CONJ1[Mark];
+      e: H -[1 = acl|advcl|nmod|obl|xcomp|ccomp|csubj|advmod, !2]-> CONJ2}
+    without{CONJ2 -[E:ref]-> PRO; H -> PRO}% The relation e is not a relation targeting a relative pronoun, which has moved to the antecedent.
+    without{CONJ2[Mark]}
+    without{CONJ1 -[enhanced=yes]-> CONJ2}
+    commands{e.2 = CONJ1.Mark}
+  }
+
+  % The relation targets the second conjunct of a coordination but the mark to augment its label is attached to the first conjunct. The label of the relation has an extension.
+  rule add_case_name2_conj{
+    pattern{
+      CONJ1 -[1=conj]-> CONJ2;
+      H -[1 = acl|advcl|nmod|obl|xcomp|ccomp|csubj|advmod]-> CONJ1; CONJ1[Mark];
+      e: H -[1 = acl|advcl|nmod|obl|xcomp|ccomp|csubj|advmod, 2=*, !3]-> CONJ2}
+    without{e.1=obl;e.2=agent}% Done in most treebanks but questionable
+    without{CONJ2[Mark]}
+    without{e.2 = CONJ1.Mark}
+    without{H -[enhanced=yes]-> CONJ2}
+    commands{e.3 = CONJ1.Mark}
+  }
+
+  % The relation has been shifted from a relative pronoun to its antecedent and its label has no extension.
+  rule add_case_name1_relpron{
+    pattern{
+      H -[ANTREL]-> D;
+      e: H -[1 = acl|advcl|nmod|obl|xcomp|ccomp|csubj|advmod, !2, enhanced =yes]-> D;
+      D -[E:ref]-> PRO; PRO[Mark]}
+    without{H -[enhanced=yes]-> D}
+    commands{add_edge f: H -> D; f.enhanced=yes; f.2=e.2; f.2 = PRO.Mark}
+  }
+
+  % The relation has been shifted from a relative pronoun to its antecedent and its label has an extension.
+  rule add_case_name2_relpron{
+    pattern{
+      H -[ANTREL]-> D;
+      e: H -[1 = acl|advcl|nmod|obl|xcomp|ccomp|csubj|advmod, 2=*, !3, enhanced =yes]-> D;
+      D -[E:ref]-> PRO; PRO[Mark]}
+    without{e.1=obl;e.2=agent}% Done in most treebanks but questionable
+    without{e.2 = PRO.Mark}
+    without{H -[enhanced=yes]-> D}
+    commands{add_edge f: H -> D; f.enhanced=yes; f.1=e.1; f.2=e.2; f.3 = PRO.Mark; }
+  }
+}
+
+% =============================================================================================
+% Marking every governor of coordination conjunctions with a Mark feature. The value of this feature is the concatenation of forms of all coordination conjunctions that depend on this governor.
+package cc_mark{
+  rule init_concat{
+    pattern{H -[1=cc]-> D; D[lemma <> "&"|"e/o"|"en/of"|"t/m"]} % "e/o" is a cooordinating conjunction in Italian, and "en/of", "t/m" in Dutch.
+    without{H -[1=cc]-> D1; D1 << D}
+    without{H[Markcc]}
+    without{D[upos=PUNCT|SYM|X]}
+    without{D[ExtForm]}
+    commands{H.Markcc= D.lemma; add_edge H -[MARK]-> D}
+  }
+
+  rule init_concat_extform{
+    pattern{H -[1=cc]-> D; D[ExtForm]}
+    without{H -[1=cc]-> D1; D1 << D}
+    without{H[Markcc]}  
+    commands{H.Markcc= D.ExtForm; add_edge H -[MARK]-> D}
+  }
+  
+  rule propagate_concat{
+    pattern{
+      e:H -[MARK]-> D; H[Markcc];
+      H -[1=cc]-> D1; D < D1}
+    without{D1[ExtForm]}
+    without{D1[upos=SYM|X]}
+    commands{
+      del_edge e; add_edge H -[MARK]-> D1;
+      H.Markcc = H.Markcc + "_" + D1.lemma}
+  }
+
+  rule propagate_concat_extform{
+    pattern{
+      e:H -[MARK]-> D; H[Markcc];
+      H -[1=cc]-> D1; D < D1; D1[ExtForm]}
+    commands{
+      del_edge e; add_edge H -[MARK]-> D1;
+      H.Markcc = H.Markcc + "_" + D1.ExtForm}
+  }
+  
+  rule close_concat{
+    pattern{e:H -[MARK]-> D}
+    without{ H -[1=cc]-> D1; D < D1 }
+    commands{del_edge e}
+  }
+  
+  rule close_concat_sym{
+    pattern{e:H -[MARK]-> D; H -[1=cc]-> D1; D < D1; D1[upos=SYM|X]}
+    commands{del_edge e}
+  }
+}
+
+% =============================================================================================
+% Addition of coordinating conjunction names to the relation CONJ targeting their governor, when the governor is a modifier.
+package cc_info{
+
+  % The label of CONJ relations is auagmented with the Markcc feature of the coordinating conjunction.
+  %Ex: email-enronsent05_01-0007-  the position of having[CONJ1] to justify why each and every party should be the exception to the suspension rather[D] than have[CONJ2] a general rule concerning how direct access should work for all parties.
+  rule add_cc_name{
+    pattern{CONJ2 -[1=cc]-> D; CONJ2[Markcc]; e2: CONJ1 -[1=conj]-> CONJ2} 
+    %without{D[ExtForm]}
+    without{D[Dupos=SYM]}
+    without{CONJ2 -[1=cc]-> D1; D1 << D}% Ex: They can freely write anything they like about our prophet, but[D1] if one raises doubts about the Holocaust he is either[D] fined[CONJ2] or sent to prison," he added.
+    without{e2.2 = CONJ2.Markcc}
+    without{CONJ1 -[enhanced=yes]-> CONJ2}
+    commands{add_edge f: CONJ1 -> CONJ2; f.enhanced=yes; f.1=conj; f.2 = CONJ2.Markcc; }
+  }
+
+  % The separator between two conjuncts is a comma. If the last conjunct is introduced 
+  rule add_and-or_name{
+    pattern{
+      CONJ1 -[conj]-> CONJ2;
+      CONJ1 -[1=conj]-> CONJ3; CONJ2 << CONJ3; CONJ3 -[cc]-> C; C[lemma=e]}
+    without{CONJ2 -[cc]-> *}
+    without{CONJ1 -[enhanced=yes]-> CONJ2}
+    commands{add_edge f: CONJ1 -> CONJ2; f.enhanced=yes; f.1=conj; f.2 = C.lemma; }
+  }
+
+  % If a conjunct CONJ2 in a coordination is introduced with a comma and the last conjunct is introduced  with a coordinating conjunction, this conjunction is added to the name of the CONJ dependency targeting CONJ2. 
+  rule add_name_comma{
+    pattern{
+      CONJ1 -[conj]-> CONJ2;
+      CONJ1 -[1=conj]-> CONJ3; CONJ2 << CONJ3; CONJ3 -[cc]-> C; C[lemma]; C [lemma="e"|"ou"]} % ELVIS: Só propagar se for conjunção aditiva
+    without{CONJ2 -[cc]-> *}
+    without{C[lemma = "&"|"e/o"|"en/of"|"t/m"]} % "e/o" is a cooordinating conjunction in Italian, and "en/of", "t/m" in Dutch.
+    without{CONJ1 -[conj]-> CONJ4; CONJ2 << CONJ4; CONJ4 << CONJ3; CONJ4 -[cc]-> *}
+    without{CONJ1 -[enhanced=yes]-> CONJ2}
+    commands{add_edge f: CONJ1 -> CONJ2; f.enhanced=yes; f.1=conj; f.2 = C.lemma; }
+  }
+}
+
+% =============================================================================================
+% Copying basic relations as enhanced relations.
+package copy_basic_enhanced{
+  % The relation to be copied has no extension.
+  rule relation1{
+    pattern{e: H -[!2]-> D}
+    without{D[PronType=Rel|"Int,Rel"]}
+    without{e.1 = orphan}
+    without{H -[enhanced=yes]-> D}
+    commands{add_edge f: H -> D;  f.enhanced = yes; f.1=e.1}
+  }
+
+  % Rule 2 MAGALI
+  rule xcomp_without_obj{
+    pattern{GOV -[xcomp]-> DEP}
+    pattern{e:SUBJ_GOV -[nsubj]-> GOV}
+    without{GOV -[obj]-> DEP2}
+    commands{add_edge f:DEP -> SUBJ_GOV; f.label = e.label; f.enhanced=yes}
+  }
+
+  % The dependent of a basic dependency without extension is a relative pronoun without a link REF with an antecedent.
+  rule relation1_pro_rel{
+    pattern{e: H -[!2]-> D; D[PronType=Rel|"Int,Rel"]}
+    without{* -[E:ref]-> D}
+    without{H -[enhanced=yes]-> D}
+    commands{add_edge f: H -> D;  f.enhanced = yes; f.1=e.1}
+  }
+
+  % The relation to be copied has an extension.
+  rule relation2{
+    pattern{e: H -[2=*]-> D}
+    without{D[PronType=Rel|"Int,Rel"]}
+    without{e.1 = orphan}
+    without{H -[enhanced=yes]-> D}
+    commands{add_edge f: H -> D;  f.enhanced = yes; f.1=e.1; f.2=e.2}
+  }
+
+  % The dependent of a basic dependency with an extension is a relative pronoun without a link REF with an antecedent.
+  rule relation2_pro_rel{
+    pattern{e: H -[2=*]-> D; D[PronType=Rel|"Int,Rel"]}
+    without{* -[E:ref]-> D}
+    without{H -[enhanced=yes]-> D}
+    commands{add_edge f: H -> D;  f.enhanced = yes; f.1=e.1;f.2=e.2 }
+  }
+
+  % ELVIS: Comentei essa regra, pois orphan é uma etiqueta que não deve existir como enhanced
+  % An ORPHAN dependency is not taken into account in the creation of null nodes.
+  %rule orphan{
+  %  pattern{H -[1=orphan,!enhanced]-> D}
+  %  without{
+  %    H1 -[1=conj|parataxis, !enhanced]-> H;
+  %    H1 -[1=conj|parataxis, enhanced=yes]-> NULL;
+  %    NULL[wordform= __EMPTY__];
+  %    NULL -> H}
+  %  without{H -[1=orphan,enhanced=yes]-> D}
+  %  commands{add_edge H -[1=orphan,enhanced=yes]-> D}
+  %}
+}
+
+% =============================================================================================
+% Cleaning all features that are not required by the standard EUD.
+package cleaning_feat{
+  rule dperson_remove{
+    pattern{X[DPerson]} commands{del_feat X.DPerson}}
+    
+  rule dtense_remove{
+    pattern{X[DTense]} commands{del_feat X.DTense}}
+    
+  rule dupos_remove{
+    pattern{X[Dupos]} commands{del_feat X.Dupos}}
+
+  rule dverbform_remove{
+    pattern{X[DVerbForm]} commands{del_feat X.DVerbForm}
+  }
+
+  rule errorprontype_remove{
+    pattern{X[ErrorPronType]} commands{del_feat X.ErrorPronType}
+  }
+  
+  rule extform_remove{
+    pattern{X[ExtForm]} commands{del_feat X.ExtForm}
+  }
+
+  rule mark_remove{
+    pattern{X[Mark]} commands{del_feat X.Mark}
+  }
+  
+  rule markcc_remove{
+    pattern{X[Markcc]} commands{del_feat X.Markcc}
+  }
+
+  rule nullsubject_remove{
+    pattern{X[NullSubject]} commands{del_feat X.NullSubject}
+  }
+
+  rule wordform_remove{
+    pattern{X[wordform <> "__EMPTY__"]} commands{del_feat X.wordform}
+  }
+}
+
+package elvis_novas{
+  % ELVIS: Sergio Moro perguntou a Palocci se Kontic sabia das ilegalidades cometidas por ele.
+  % [ilegalidades], além de head do acl cujo dependente é [cometidas], é também dependente do nsubj cujo head é [cometidas]
+  rule propaga_nsubjpass_para_acl{
+    pattern{
+      HEADACL -[1=acl]-> DEPACL;
+      DEPACL [VerbForm=Part,Voice=Pass];
+    }
+    without {
+      DEPACL -[1=nsubj]-> *
+    }
+    commands{add_edge f: DEPACL -> HEADACL; f.label = "nsubj:pass"; f.enhanced=yes}
+  }
+}
+
+package elvis_limpezas{
+  rule limpa_conj_orphan{
+    pattern{
+      NOFORM [wordform="__EMPTY__"];
+      e: CONJ -[1=conj]-> NOFORM;
+      f: CONJ -[1=conj,enhanced=yes]-> HEADORPHAN;
+      HEADORPHAN -[1=orphan]-> ORPHAN;
+      NOFORM -> ORPHAN;
+    }
+    commands{e.label = f.label; del_edge f;}
+  }
+  rule limpa_cc_punct_orphan{
+    pattern{
+      NOFORM [wordform="__EMPTY__"];
+      NOFORM -[1=cc|punct]-> MOD;
+      f: OUTRO -[1=cc|punct,enhanced=yes]-> MOD;
+    }
+    commands{del_edge f;}
+  }
+
+  rule limpa_noform_movido{
+    pattern{NOFORM [noform_movido=yes]}
+    commands{del_feat NOFORM.noform_movido}
+  }
+  rule limpa_multiplos_orphans{
+    pattern{NOFORM [multiplos_orphans=yes]}
+    commands{del_feat NOFORM.multiplos_orphans}
+  }
+}
+
+package elvis_orphan{
+  % ELVIS: não vamos avaliar a colocação da pontuação, então vou comentar a regra
+  %rule corrige_punct_dependente_do_orphan{
+  %  pattern{
+  %    NOFORM [wordform="__EMPTY__"];
+  %    HEADORPHAN -[1=orphan]-> ORPHAN;
+  %    NOFORM -> HEADORPHAN;
+  %    ORPHAN -[1=punct]-> PUNCT;
+  %    PUNCT << ORPHAN;
+  %  }
+  %  without{NOFORM -[1=punct,enhanced=yes]-> PUNCT}
+  %  commands{add_edge f:NOFORM -> PUNCT; f.label = "punct"; f.enhanced = yes}
+  %}
+
+  rule corrige_move_noform_orphan_antes_do_head{
+    pattern{
+      NOFORM [noform_movido=yes];
+      HEADORPHAN -[1=orphan]-> ORPHAN;
+      NOFORM -> HEADORPHAN;
+      HEADORPHAN -[1=nmod|amod|nummod|det|case|advmod|mark]-> MOD;
+      MOD < NOFORM;
+      HEADORPHAN >> ORPHAN;
+    }
+    commands{
+      unorder NOFORM;
+      insert NOFORM :< MOD;
+    }
+  }
+
+  rule corrige_move_noform_orphan_depois_do_head{
+    pattern{
+      NOFORM [noform_movido=yes];
+      HEADORPHAN -[1=orphan]-> ORPHAN;
+      NOFORM -> HEADORPHAN;
+      ORPHAN -[1=nmod|amod|nummod|det|case|advmod|mark]-> MOD;
+      MOD < NOFORM;
+      HEADORPHAN << ORPHAN;
+    }
+    commands{
+      unorder NOFORM;
+      insert NOFORM :< MOD;
+    }
+  }
+
+  rule corrige_move_noform_fixed{
+    pattern{
+      NOFORM [noform_movido=yes];
+      MOD -[1=fixed]-> FIXED;
+      FIXED < NOFORM;
+    }
+    commands{
+      unorder NOFORM;
+      insert NOFORM :< FIXED;
+    }
+  }
+
+  rule move_noform_multiplos_orphans{
+    pattern{
+      HEADORPHAN -[1=orphan]-> ORPHAN;
+      HEADORPHAN -[1=orphan]-> ORPHAN2;
+      NOFORM [wordform="__EMPTY__", !multiplos_orphans];
+      NOFORM -> HEADORPHAN;
+      NOFORM < ORPHAN;
+      ORPHAN2 << ORPHAN;
+    }
+    commands {
+      unorder NOFORM;
+      insert NOFORM :< ORPHAN2;
+      NOFORM.multiplos_orphans = yes;
+    }
+  }
+
+  rule move_noform_orphan_depois_do_head{
+    pattern{
+      HEADORPHAN -[1=orphan]-> ORPHAN;
+      NOFORM [wordform="__EMPTY__", !noform_movido, !multiplos_orphans];
+      NOFORM -> HEADORPHAN;
+      HEADORPHAN << ORPHAN;
+    }
+    commands{
+      unorder NOFORM;
+      insert NOFORM :< ORPHAN;
+      NOFORM.noform_movido = yes;
+    }
+  }
+
+  rule move_noform_orphan_antes_do_head{
+    pattern{
+      HEADORPHAN -[1=orphan]-> ORPHAN;
+      NOFORM [wordform="__EMPTY__", !noform_movido, !multiplos_orphans];
+      NOFORM -> HEADORPHAN;
+      HEADORPHAN >> ORPHAN;
+    }
+    commands{
+      unorder NOFORM;
+      insert NOFORM :< HEADORPHAN;
+      NOFORM.noform_movido = yes;
+    }
+  }
+
+  rule remove_noform_duplicado{
+    pattern{
+      HEADORPHAN -[1=orphan]-> ORPHAN;
+      NOFORM [wordform="__EMPTY__"];
+      NOFORM2 [wordform="__EMPTY__"];
+      NOFORM -> HEADORPHAN;
+      f: NOFORM2 -> HEADORPHAN;
+    }
+    commands{
+      del_node NOFORM2
+    }
+  }
+
+  rule lema_noform {
+    pattern{
+      NOFORM [wordform="__EMPTY__", !lemma];
+      CONJ -[1=conj]-> NOFORM;
+    }
+    commands{
+      NOFORM.lemma = CONJ.lemma;
+    }
+  }
+}
+
+package elvis{
+  % ELVIS: As regras são lidas de baixo para cima, da última para a primeira.
+  % Novas regras devem ser inseridas aqui no topo.  
+
+  % ELVIS: A companhia diz que o medicamento permite a os pacientes fazerem algumas ações simples sozinhos, como se sentar, levantar e até andar.
+  % Complementa a regra abaixo removendo o sujeito do DEPXCOMP [medicamento], pois é o obl [pacientes] quem deve ocupar esse lugar (e já passou a ocupar na regra abaixo)
+  rule corrige_obl_sujeito_do_depxcomp{
+    pattern{
+      HEADXCOMP -[1=xcomp]-> DEPXCOMP;
+      HEADXCOMP -[1=obl]-> OBL;
+      DEPXCOMP -[1=nsubj]-> OBL;
+      HEADXCOMP -[1=nsubj]-> NSUBJ;
+      f: DEPXCOMP -[1=nsubj]-> NSUBJ;
+    }
+    commands{del_edge f}
+  }
+  % ELVIS: A companhia diz que o medicamento permite a os pacientes fazerem algumas ações simples sozinhos, como se sentar, levantar e até andar.
+  % [pacientes] é nsubj do dependente de xcomp [fazerem]
+  % Segundo Magali, isso só acontece com os obl introduzidos por [a] e com o head de xcomp [permitir]
+  rule obl_sujeito_do_depxcomp{
+    pattern{
+      HEADXCOMP -[1=xcomp]-> DEPXCOMP;
+      HEADXCOMP -[1=obl,2=a]-> OBL;
+      HEADXCOMP [lemma=permitir]
+    }
+    without{DEPXCOMP -> OBL}
+    commands{add_edge f: DEPXCOMP -> OBL; f.label = "nsubj"; f.enhanced=yes}
+  }
+
+  % ELVIS: Essa lei permitiu-lhes ganhar um aumento de salário.
+  % [lei] não é nsubj de [ganhar], pois [lhes] já é o seu nsubj
+  % Complementa a regra abaixo.
+  rule corrige_iobj_vira_suj_do_depxcomp{
+    pattern{
+      HEADXCOMP -[1=xcomp]-> DEPXCOMP;
+      f: DEPXCOMP -[1=nsubj,enhanced=yes]-> SUJ1;
+      DEPXCOMP -[1=nsubj]-> SUJ2;
+      HEADXCOMP -[1=iobj]-> SUJ2;
+      HEADXCOMP -[1=nsubj]-> SUJ1;
+    }
+    commands{del_edge f}
+  }
+
+  % ELVIS: Essa lei permitiu-lhes ganhar um aumento de salário.
+  % [lhes] é nsubj de [ganhar]
+  rule iobj_vira_suj_do_depxcomp{
+    pattern{
+      HEADXCOMP -[1=iobj]-> IOBJ;
+      IOBJ [upos=PRON,PronType=Prs,Case=Dat];
+      HEADXCOMP -[1=xcomp]-> DEPXCOMP;
+    }
+    without{
+      DEPXCOMP -[1=nsubj]-> IOBJ;
+    }
+    commands{add_edge f:DEPXCOMP -> IOBJ; f.label = "nsubj"; f.enhanced=yes;}
+  }
+
+  % ELVIS: Essa é a maneira como eles usam a língua.
+  % [como] é ref de [maneira]
+  % [maneira] é obl de [usam]
+  % [como] não é advmod de [usam]
+  rule ref_aclrelcl{
+    pattern{
+      ADVREL [lemma="como"|"onde"|"quando",upos=ADV];
+      HEADACLRELCL -[acl:relcl]-> DEPACLRELCL;
+      h: DEPACLRELCL -[1=advmod,enhanced=yes]-> ADVREL;
+    }
+    without{
+      HEADACLRELCL -[1=ref]-> *;
+    }
+    commands{
+      add_edge f: HEADACLRELCL -> ADVREL; f.label = "ref"; f.enhanced=yes;
+      add_edge g: DEPACLRELCL -> HEADACLRELCL; g.label = "obl"; g.enhanced=yes;
+      del_edge h;
+    }
+  }
+
+  % ELVIS: Isso eu devo fazer mais tarde.
+  % [eu] é nsubj de [fazer]
+  % Complementa a regra abaixo.
+  rule suj_xcomp {
+    pattern{
+      HEADXCOMP -[1=xcomp]-> DEPXCOMP;
+      HEADXCOMP -[1=nsubj]-> SUJHEADXCOMP;
+    }
+    without{
+      DEPXCOMP -[1=nsubj]-> *;
+    }
+    commands{add_edge f:DEPXCOMP -> SUJHEADXCOMP; f.label = "nsubj"; f.enhanced=yes}
+  }
+
+  % ELVIS: Esse fenômeno se acentua ainda mais em a carne moída porque há mais superfícies a as quais o colágeno gelatinoso pode aderir.
+  % [quais], à esquerda do HEADXCOMP [pode], é obl de [aderir], e não de [pode]
+  % A regra está causando muitos efeitos colaterais, removendo.
+  %rule obl_antes_do_head_xcomp{
+  %  pattern{
+  %    k: HEADXCOMP -[1=obl,enhanced=yes]-> OBL;
+  %    OBL << HEADXCOMP;
+  %    HEADXCOMP -[1=xcomp]-> DEPXCOMP;
+  %  }
+  %  without{
+  %    DEPXCOMP -[1=obl]-> OBL;
+  %  }
+  %  commands{
+  %    add_edge f:DEPXCOMP -> OBL; f.label = "obl"; f.enhanced=yes; 
+  %    del_edge k;
+  %  }
+  %}
+
+  % ELVIS: Isso eu devo fazer mais tarde.
+  % [Isso] é obj de [fazer], e não de [devo]
+  % Restrição: Eu o vi chorar.
+  % [o] é nsubj de [chorar], e não obj
+  % [o] não pode ser PronType=Prs
+  % OBJ [PronType<>Prs]|[!PronType]: O nome disso é "disjunctive condition" - não passa no Grew.fr! Putz.
+  rule obj_antes_do_head_xcomp{
+    pattern{
+      k: HEADXCOMP -[1=obj,enhanced=yes]-> OBJ;
+      OBJ << HEADXCOMP;
+      OBJ [PronType<>Prs]|[!PronType];
+      HEADXCOMP -[1=xcomp]-> DEPXCOMP;
+      l: DEPXCOMP -[1=nsubj]-> OBJ;
+    }
+    without{
+      DEPXCOMP -[1=obj]-> OBJ;
+    }
+    commands{
+      add_edge f:DEPXCOMP -> OBJ; f.label = "obj"; f.enhanced=yes; 
+      del_edge k;
+      del_edge l;
+    }
+  }
+% ELVIS: As regras são lidas de baixo para cima, da última para a primeira.
+% Idealmente, novas regras são colocas no topo desse pacote.
+}
+
+strat strat_modificadas_novas{
+  Seq(
+        Onf(root),
+        Onf(deep_features),
+        Onf(null_nodes_head),
+        Onf(null_nodes_dep),
+        Onf(orphan_default_pck),
+        Onf(elvis_orphan),
+        Onf(rel_pron),
+        Onf(deep_subj_ud),
+        Onf(coord_gov),
+        Onf(null_subject),
+        Onf(coord_dep_left_pck),
+        Onf(coord_dep_right_pck),
+        Onf(deep_subj_ud),
+        Onf(rel_pron),
+        Onf(case_mwe),
+        Onf(case_mark),
+        Onf(case_info),
+        Onf(cc_mark),
+        Onf(cc_info),
+        Onf(copy_basic_enhanced),
+        Onf(cleaning_feat),
+        Onf(elvis),
+        Onf(elvis_novas),
+        Onf(elvis_limpezas),
+    )
+}
+
+strat strat_modificadas{
+    Seq(
+        Onf(root),
+        Onf(deep_features),
+        Onf(null_nodes_head),
+        Onf(null_nodes_dep),
+        Onf(orphan_default_pck),
+        Onf(elvis_orphan),
+        Onf(rel_pron),
+        Onf(deep_subj_ud),
+        Onf(coord_gov),
+        Onf(null_subject),
+        Onf(coord_dep_left_pck),
+        Onf(coord_dep_right_pck),
+        Onf(deep_subj_ud),
+        Onf(rel_pron),
+        Onf(case_mwe),
+        Onf(case_mark),
+        Onf(case_info),
+        Onf(cc_mark),
+        Onf(cc_info),
+        Onf(copy_basic_enhanced),
+        Onf(cleaning_feat),
+        Onf(elvis),
+        Onf(elvis_limpezas),
+    )
+}
+
