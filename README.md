@@ -1,4 +1,4 @@
-# Tranformação de UD para EUD na língua portuguesa
+# Transformação de UD para EUD na língua portuguesa
 ## Introdução
 A aplicação utiliza o [Grew](https://grew.fr), uma ferramenta de reescrita em grafos para aplicações que envolvem Processamento de Linguagem Natural (PLN).
 
